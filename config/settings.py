@@ -27,13 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 LOCAL_APPS = [
-    "apps.core.apps.CoreConfig",
-    "apps.projects.apps.ProjectsConfig",
-    "apps.users.apps.UsersConfig",
-    "apps.utils.apps.UtilsConfig",
+    "intro.core.apps.CoreConfig",
+    "intro.projects.apps.ProjectsConfig",
+    "intro.users.apps.UsersConfig",
+    "intro.utils.apps.UtilsConfig",
 ]
 
 THIRD_PARTY_APPS = []
