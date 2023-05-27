@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -27,3 +28,6 @@ class EmailOrPhoneNumberAuthentication:
     def set_blacklist_token(refresh_token):
         token = RefreshToken(refresh_token)
         return token.blacklist()
+
+
+AUTH = EmailOrPhoneNumberAuthentication()

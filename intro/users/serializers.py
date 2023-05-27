@@ -1,17 +1,12 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import (
-    UserAttributeSimilarityValidator,
-    MinimumLengthValidator,
-    CommonPasswordValidator,
-    NumericPasswordValidator
-)
+from django.contrib.auth import password_validation
 
 from rest_framework import serializers
 
-from core.cache import get_cached_otp
+from intro.core.cache import get_cached_otp
 
-from utils.validators import password_match_checker, OTPCodeValidator
-from utils.regexes import is_phone_or_email
+from intro.utils.validators import password_match_checker, OTPCodeValidator
+from intro.utils.regexes import is_phone_or_email
 
 
 class BaseAuthSerializer(serializers.Serializer):
@@ -29,10 +24,10 @@ class LoginSerializer(BaseAuthSerializer):
 
 class RegisterSerializer(BaseAuthSerializer):
     password = serializers.CharField(validators=[
-        UserAttributeSimilarityValidator,
-        MinimumLengthValidator,
-        CommonPasswordValidator,
-        NumericPasswordValidator,
+        password_validation.UserAttributeSimilarityValidator,
+        password_validation.MinimumLengthValidator,
+        password_validation.CommonPasswordValidator,
+        password_validation.NumericPasswordValidator,
     ])
     password_confirm = serializers.CharField()
 
@@ -44,6 +39,21 @@ class RegisterSerializer(BaseAuthSerializer):
         return validated_data
 
 
+class RegisterVerifySerializer(BaseAuthSerializer):
+    code = serializers.CharField(validators=[OTPCodeValidator])
+
+    def validate_code(self, validated_data):
+        login_method = validated_data.get('login_method')
+        code = validated_data.get('code')
+        cached_otp = get_cached_otp(login_method)
+        if not cached_otp:
+            if code != cached_otp:
+                raise serializers.ValidationError("Code is invalid")
+            raise serializers.ValidationError("Code has been expired")
+        return validated_data
+
+
+
 class ResetPasswordSerializer(BaseAuthSerializer):
     ...
 
@@ -51,10 +61,10 @@ class ResetPasswordSerializer(BaseAuthSerializer):
 class ResetPasswordVerifySerializer(serializers.Serializer):
     code = serializers.CharField(validators=[OTPCodeValidator])
     password = serializers.CharField(validators=[
-        UserAttributeSimilarityValidator,
-        MinimumLengthValidator,
-        CommonPasswordValidator,
-        NumericPasswordValidator,
+        password_validation.UserAttributeSimilarityValidator,
+        password_validation.MinimumLengthValidator,
+        password_validation.CommonPasswordValidator,
+        password_validation.NumericPasswordValidator,
     ])
     password_confirm = serializers.CharField()
 
@@ -79,10 +89,10 @@ class ResetPasswordVerifySerializer(serializers.Serializer):
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField()
     password = serializers.CharField(validators=[
-        UserAttributeSimilarityValidator,
-        MinimumLengthValidator,
-        CommonPasswordValidator,
-        NumericPasswordValidator,
+        password_validation.UserAttributeSimilarityValidator,
+        password_validation.MinimumLengthValidator,
+        password_validation.CommonPasswordValidator,
+        password_validation.NumericPasswordValidator,
     ])
     password_confirm = serializers.CharField()
 
@@ -108,18 +118,8 @@ class VerifyURLSerializer(serializers.Serializer):
     url = serializers.URLField()
 
 
-class VerifyRegisterSerializer(BaseAuthSerializer):
-    code = serializers.CharField(validators=[OTPCodeValidator])
-
-    def validate_code(self, validated_data):
-        login_method = validated_data.get('login_method')
-        code = validated_data.get('code')
-        cached_otp = get_cached_otp(login_method)
-        if not cached_otp:
-            if code != cached_otp:
-                raise serializers.ValidationError("Code is invalid")
-            raise serializers.ValidationError("Code has been expired")
-        return validated_data
+class TokenExpiredErrorSerializer(serializers.Serializer):
+    token = serializers.CharField()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -131,11 +131,3 @@ class UserSerializer(serializers.ModelSerializer):
             "about",
             "is_active",
         ]
-
-
-class TokenExpiredErrorSerializer(serializers.Serializer):
-    token = serializers.CharField()
-
-
-class EmptySerializer(serializers.Serializer):
-    ...
