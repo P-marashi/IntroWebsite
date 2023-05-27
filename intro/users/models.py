@@ -59,6 +59,7 @@ class UserManager(BaseUserManager):
 # Create your models here.
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     """ User Model """
+    last = models.CharField(max_length=100, null=True, blank=True)
     phone_number = models.CharField(max_length=11, unique=True)
     email = models.EmailField(validators=[EmailValidator], unique=True)
     about = models.CharField(max_length=300, null=True, blank=True)
@@ -75,3 +76,11 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     @property
     def first_name(self):
         return self.name
+
+    @property
+    def last_name(self):
+        return self.last
+
+    @property
+    def full_name(self):
+        return f"{self.name}, {self.last}"

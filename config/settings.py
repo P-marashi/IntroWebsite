@@ -39,6 +39,8 @@ LOCAL_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework'
     'rest_framework_simplejwt'
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 ]
 
 DJANGO_APPS = [
@@ -137,5 +139,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+
+# Spectacular Configuration
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'WebFreeLancers Intro API',
+    'DESCRIPTION': 'API Documentation for WebFreeLancers Intro website',
+    'VERSION': '0.1.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
 }
