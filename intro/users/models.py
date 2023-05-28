@@ -6,7 +6,7 @@ from intro.core.models import BaseModel
 
 
 class UserManager(AuthModels.BaseUserManager):
-    """ User Manager """
+    """ Custom User Manager extends BaseUserManager """
     def _create_user(self, email=None, phone_number=None,
                      password=None, **extra_fields):
         if email:
@@ -56,7 +56,11 @@ class UserManager(AuthModels.BaseUserManager):
 
 # Create your models here.
 class User(BaseModel, AuthModels.AbstractBaseUser, AuthModels.PermissionsMixin):
-    """ User Model """
+    """ Custom Django User Model
+        that extends of AbstractBaseUser
+    """
+    profile_photo = models.ImageField(upload_to="users/images/",
+                                      null=True, blank=True)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     phone_number = models.CharField(max_length=11,
@@ -77,8 +81,15 @@ class User(BaseModel, AuthModels.AbstractBaseUser, AuthModels.PermissionsMixin):
 
     @property
     def is_staff(self):
+        """ return is_admin value
+            when is_staff called
+            used for admin panel
+        """
         return self.is_admin
 
     @property
     def full_name(self):
+        """ method for getting user fullname
+            combine firstname and lastname
+        """
         return f"{self.first_name}, {self.last_name}"

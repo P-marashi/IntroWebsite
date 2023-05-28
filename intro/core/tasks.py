@@ -21,8 +21,17 @@ def send_otp_mobile():
 
 @shared_task
 def send_otp_email(to_email, otp_code):
-    return send_mail(subject=f"کد ورود به {settings.SITE_NAME}", message="",
-              html_message=OTP_CONTENT.format(name=to_email,
-                    website_name=settings.SITE_NAME, otp_code=otp_code),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[to_email])
+    """ A simple shared task for sending
+        otp code to given email address
+    """
+
+    return send_mail(
+        subject=f"کد ورود به {settings.SITE_NAME}",
+        message="",
+        html_message=OTP_CONTENT.format(
+            name=to_email,
+            website_name=settings.SITE_NAME, otp_code=otp_code
+        ),
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[to_email]
+    )

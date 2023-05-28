@@ -1,15 +1,23 @@
+from django.http import Http404
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from django.http import Http404
+
+from drf_spectacular.utils import extend_schema
+from intro.core.serializers import EmptySerializer
+
 from .models import Ticket, Answer
 from .serializers import TicketSerializer, AnswerSerializer
 
 
 class TicketListCreateAPIView(APIView):
+    """ An APIView for create and list Tickets """
+
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=EmptySerializer, responses={200: TicketSerializer})
     def get(self, request):
         """
         Handles GET request to retrieve a list of tickets.
@@ -23,6 +31,7 @@ class TicketListCreateAPIView(APIView):
         serializer = TicketSerializer(tickets, many=True)
         return Response(serializer.data)
 
+    @extend_schema(request=TicketSerializer, responses={201: TicketSerializer})
     def post(self, request):
         """
         Handles POST request to create a new ticket.
@@ -36,12 +45,15 @@ class TicketListCreateAPIView(APIView):
 
 
 class TicketDetailAPIView(APIView):
+    """ An APIView for Retrieve, Update, Destroy Tickets """
+
     permission_classes = [IsAuthenticated]
 
     def get_object(self, pk):
         """
         Helper method to get the ticket object by its primary key (pk).
-        Raises a 404 error if the ticket is not found or if the user does not have permission to access it.
+        Raises a 404 error if the ticket is not found or if the user
+        does not have permission to access it.
         """
         try:
             ticket = Ticket.objects.get(pk=pk)
@@ -53,6 +65,7 @@ class TicketDetailAPIView(APIView):
         except Ticket.DoesNotExist:
             raise Http404
 
+    @extend_schema(request=EmptySerializer, responses={200: TicketSerializer})
     def get(self, request, pk):
         """
         Handles GET request to retrieve details of a specific ticket.
@@ -62,6 +75,7 @@ class TicketDetailAPIView(APIView):
         serializer = TicketSerializer(ticket)
         return Response(serializer.data)
 
+    @extend_schema(request=TicketSerializer, responses={200: TicketSerializer})
     def put(self, request, pk):
         """
         Handles PUT request to update a specific ticket.
@@ -74,6 +88,7 @@ class TicketDetailAPIView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(request=EmptySerializer, responses={204: EmptySerializer})
     def delete(self, request, pk):
         """
         Handles DELETE request to delete a specific ticket.
@@ -91,8 +106,11 @@ class TicketDetailAPIView(APIView):
 
 
 class AnswerListCreateAPIView(APIView):
+    """ An APIView for create and list answer objects """
+
     permission_classes = [IsAdminUser]
 
+    @extend_schema(request=EmptySerializer, responses={200: AnswerSerializer})
     def get(self, request):
         """
         Handles GET request to retrieve a list of answers.
@@ -102,6 +120,7 @@ class AnswerListCreateAPIView(APIView):
         serializer = AnswerSerializer(answers, many=True)
         return Response(serializer.data)
 
+    @extend_schema(request=AnswerSerializer, responses={201: AnswerSerializer})
     def post(self, request):
         """
         Handles POST request to create a new answer.
@@ -115,6 +134,8 @@ class AnswerListCreateAPIView(APIView):
 
 
 class AnswerDetailAPIView(APIView):
+    """ An APIView for Update, Destroy, Retrive Answers objects """
+
     permission_classes = [IsAdminUser]
 
     def get_object(self, pk):
@@ -127,6 +148,7 @@ class AnswerDetailAPIView(APIView):
         except Answer.DoesNotExist:
             raise Http404
 
+    @extend_schema(request=EmptySerializer, responses={200: AnswerSerializer})
     def get(self, request, pk):
         """
         Handles GET request to retrieve details of a specific answer.
@@ -136,6 +158,7 @@ class AnswerDetailAPIView(APIView):
         serializer = AnswerSerializer(answer)
         return Response(serializer.data)
 
+    @extend_schema(request=EmptySerializer, responses={200: AnswerSerializer})
     def put(self, request, pk):
         """
         Handles PUT request to update a specific answer.
@@ -148,6 +171,7 @@ class AnswerDetailAPIView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(request=EmptySerializer, responses={204: EmptySerializer})
     def delete(self, request, pk):
         """
         Handles DELETE request to delete a specific answer.

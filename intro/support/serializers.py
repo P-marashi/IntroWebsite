@@ -10,17 +10,10 @@ class TicketSerializer(serializers.ModelSerializer):
         model = Ticket
         fields = '__all__'
 
-    def create(self, validated_data):
-        # Override the create method to customize object creation if needed
-        return super().create(validated_data)
-
     def get_user(self, obj):
         # Customize the serialized user information here
         user = obj.user
-        return {
-            'user': user.mobile,
-            # Include any other user fields you want to include in the response
-        }
+        return user
 
     def to_representation(self, instance):
         # Override the to_representation method to customize the serialized representation

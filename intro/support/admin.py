@@ -4,6 +4,8 @@ from .models import Ticket, Answer
 
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
+    """ Ticket model on admin interface """
+
     # Displayed fields in the list view of the admin interface
     list_display = ('title', 'user', 'created_at', 'updated_at')
 
@@ -16,6 +18,8 @@ class TicketAdmin(admin.ModelAdmin):
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
+    """ Answer model on admin interface """
+
     # Displayed fields in the list view of the admin interface
     list_display = ('ticket', 'admin', 'status', 'created_at')
 

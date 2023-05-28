@@ -4,6 +4,8 @@ from . import models
 
 
 class ImageSerializer(serializers.ModelSerializer):
+    """ Serializing the images of projects """
+
     class Meta:
         model = models.ImageExamples
         fields = [
@@ -14,6 +16,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class FeatureSerializer(serializers.ModelSerializer):
+    """ Serializing the feature of projects """
     class Meta:
         model = models.Features
         fields = [
@@ -24,6 +27,7 @@ class FeatureSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    """ Serializing the projects """
     class Meta:
         model = models.Projects
         fields = [
@@ -33,6 +37,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "features",
             "images",
             "url_example",
+            "user",
             "updated_at",
             "created_at",
         ]

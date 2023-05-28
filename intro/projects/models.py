@@ -6,6 +6,11 @@ from intro.core.models import BaseModel
 
 # Create your models here.
 class ImageExamples(BaseModel):
+    """ Image model object
+        Users can add unlimited
+        images to their projects
+    """
+
     image = models.ImageField()
 
     def __str__(self):
@@ -13,6 +18,10 @@ class ImageExamples(BaseModel):
 
 
 class Features(BaseModel):
+    """ Features model object
+        Users can add unlimit
+        features to their projects
+    """
     text = models.TextField()
 
     def __str__(self):
@@ -20,6 +29,10 @@ class Features(BaseModel):
 
 
 class Projects(BaseModel):
+    """ Project model object
+        Users can declare their
+        wanted projects by this model
+    """
     title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=50, unique=True)
     description = models.TextField(max_length=5000)

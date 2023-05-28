@@ -2,7 +2,7 @@ from django.urls import path
 from .apis import (
     BlogPostCreateAPIView,
     BlogPostListAPIView,
-    BlogPostDetailAPIView
+    BlogPostRetrieveUpdateDestroyAPIView
 )
 
 urlpatterns = [
@@ -13,5 +13,6 @@ urlpatterns = [
     path('list/', BlogPostListAPIView.as_view(), name='blog-list'),
 
     # Endpoint for retrieving, updating, and deleting a specific blog post (admin only)
-    path('<slug:slug>/', BlogPostDetailAPIView.as_view(), name='blog-detail'),
+    path('<slug:slug>/', BlogPostRetrieveUpdateDestroyAPIView.as_view(),
+         name='blog-retrieve-update-destroy'),
 ]

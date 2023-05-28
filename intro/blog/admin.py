@@ -4,6 +4,8 @@ from .models import BlogPost
 
 @admin.register(BlogPost)
 class BlogPostAdmin(admin.ModelAdmin):
+    """ ModelAdmin for managing Blog posts """
+
     # Displayed fields in the list view of the admin interface
     list_display = ('title', 'slug', 'category', 'image')
 

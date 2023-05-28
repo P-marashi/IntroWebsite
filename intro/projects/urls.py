@@ -4,37 +4,24 @@ from . import apis
 
 
 urlpatterns = [
-    path('create/', apis.CreateProjectAPIView.as_view(),
-         name="create_project"),
-    path('update/<int:pk>/', apis.UpdateProjectAPIView.as_view(),
-         name="update_project"),
-    path('delete/<int:pk>/', apis.DestroyProjectAPIView.as_view(),
-         name="destroy_project"),
-    path('list/', apis.ListProjectAPIView.as_view(),
-         name="list_project"),
-
-    path('<int:pk>/', include([
-        path('', apis.RetrieveProjectAPIView.as_view(),
-             name="retreive_project"),
-        path('feature/', include([
-            path('create/', apis.CreateProjectFeatureAPIView.as_view(),
-                 name="create_project_feature"),
-            path('update/<int:pk>/', apis.UpdateProjectFeatureAPIView.as_view(),
-                 name="update_project_feature"),
-            path('delete/<int:pk>/', apis.DestroyProjectFeatureAPIView.as_view(),
-                 name="destroy_project_feature"),
-            path('list/', apis.ListProjectFeatureAPIView.as_view(),
-                 name="list_project_feature"),
-        ])),
-        path('image/', include([
-            path('create/', apis.CreateProjectImageExampleAPIView.as_view(),
-                 name="create_project_image"),
-            path('update/<int:pk>/', apis.UpdateProjectImageExampleAPIView.as_view(),
-                 name="update_project_image"),
-            path('delete/<int:pk>/', apis.DestroyProjectImageExampleAPIView.as_view(),
-                 name="destroy_project_image"),
-            path('list/', apis.ListProjectImageExampleAPIView.as_view(),
-                 name="list_project_image"),
-        ])),
-    ])),
+     path('', apis.ListCreateProjectAPIView.as_view(),
+          name="project_create_list"),
+     path('<int:project_pk>/', include([
+          path('', apis.RetrieveUpdateDestroyProjectAPIView.as_view(),
+               name="project_retrive_update_destroy"),
+          path('<int:project_pk>/features/', include([
+               path('', apis.ListCreateProjectFeatureAPIView.as_view(),
+                    name="create_list_features"),
+               path('<int:feature_pk>/',
+                    apis.UpdateDestroyProjectFeatureAPIView.as_view(),
+                    name="feature_update_destroy"),
+               ])),
+          path('<int:project_pk>/images/', include([
+               path('', apis.ListCreateProjectImageExampleAPIView.as_view(),
+                    name="create_list_image"),
+               path('<int:image_pk>/',
+                    apis.UpdateDestroyProjectImageExampleAPIView.as_view(),
+                    name="image_update_destroy")
+               ]))
+          ]))
 ]

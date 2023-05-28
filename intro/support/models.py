@@ -6,8 +6,9 @@ from intro.core.models import BaseModel
 
 
 class Ticket(BaseModel):
-    parent = models.ForeignKey('self', on_delete=models.CASCADE,
-                               blank=True, default=True, null=True)
+    parent = models.ForeignKey('self', related_name="replieds",
+                               on_delete=models.CASCADE, blank=True,
+                               default=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # ForeignKey to the User model
     title = models.CharField(max_length=200)
     file = models.FileField(blank=True)
@@ -26,14 +27,15 @@ def set_ticket_user(sender, instance, **kwargs):
 
 class Answer(BaseModel):
     STATUS_CHOICES = [
-        ('Open', 'Open'),
-        ('In Progress', 'In Progress'),
-        ('Resolved', 'Resolved'),
+        ('O', 'Open'),
+        ('I', 'In Progress'),
+        ('S', 'Solved'),
     ]
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
     admin = models.ForeignKey(User, on_delete=models.CASCADE)
     response = models.TextField()
-    status = models.CharField(choices=STATUS_CHOICES, max_length=155, default="open")
+    status = models.CharField(choices=STATUS_CHOICES,
+                              max_length=155, default="O")
 
     def __str__(self):
         return f"{self.ticket} - {self.admin}"

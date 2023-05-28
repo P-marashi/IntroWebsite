@@ -1,7 +1,13 @@
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework.response import Response
+from django.http import Http404
+
 from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+
+from drf_spectacular.utils import extend_schema
+from intro.core.serializers import EmptySerializer
+
 from .models import BlogPost
 from .serializers import BlogPostSerializer
 
@@ -14,6 +20,8 @@ class BlogPostCreateAPIView(APIView):
 
     permission_classes = [IsAdminUser]
 
+    @extend_schema(request=EmptySerializer, responses={
+        201: BlogPostSerializer})
     def post(self, request):
         """
         Create a new blog post.
@@ -31,6 +39,8 @@ class BlogPostListAPIView(APIView):
     API view for retrieving a list of all blog posts.
     """
 
+    @extend_schema(request=EmptySerializer, responses={
+        200: BlogPostSerializer})
     def get(self, request):
         """
         Retrieve a list of all blog posts.
@@ -41,7 +51,7 @@ class BlogPostListAPIView(APIView):
         return Response(serializer.data)
 
 
-class BlogPostDetailAPIView(APIView):
+class BlogPostRetrieveUpdateDestroyAPIView(APIView):
     """
     API view for retrieving, updating, and deleting an individual blog post.
     Only accessible by admin users.
@@ -59,6 +69,8 @@ class BlogPostDetailAPIView(APIView):
         except BlogPost.DoesNotExist:
             raise Http404
 
+    @extend_schema(request=EmptySerializer, responses={
+        200: BlogPostSerializer})
     def get(self, request, slug):
         """
         Retrieve the details of a blog post.
@@ -68,6 +80,8 @@ class BlogPostDetailAPIView(APIView):
         serializer = BlogPostSerializer(blog_post)
         return Response(serializer.data)
 
+    @extend_schema(request=EmptySerializer, responses={
+        200: BlogPostSerializer})
     def put(self, request, slug):
         """
         Update the details of a blog post.
@@ -80,6 +94,7 @@ class BlogPostDetailAPIView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(request=EmptySerializer, responses={204: EmptySerializer})
     def delete(self, request, slug):
         """
         Delete a blog post.

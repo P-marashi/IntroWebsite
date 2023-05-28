@@ -1,15 +1,21 @@
 from django.db import models
 from django.utils.text import slugify
 
+from intro.core.models import BaseModel
 
-class Category(models.Model):
+
+class Category(BaseModel):
+    """ Category model using for post categories """
+    
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
 
 
-class BlogPost(models.Model):
+class BlogPost(BaseModel):
+    """ Blog post model object """
+
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)  # A slug field to create SEO-friendly URLs
     category = models.ForeignKey(Category, on_delete=models.CASCADE)  # Relationship with the Category model
