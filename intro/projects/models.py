@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from intro.core.models import BaseModel
@@ -7,15 +8,29 @@ from intro.core.models import BaseModel
 class ImageExamples(BaseModel):
     image = models.ImageField()
 
+    def __str__(self):
+        return self.image
+
 
 class Features(BaseModel):
     text = models.TextField()
+
+    def __str__(self):
+        return self.text
 
 
 class Projects(BaseModel):
     title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=50, unique=True)
     description = models.TextField(max_length=5000)
-    features = models.ManyToManyField(Features)
-    images = models.ManyToManyField(ImageExamples)
+    features = models.ManyToManyField(Features,
+                                      related_name="projects", blank=True)
+    images = models.ManyToManyField(ImageExamples,
+                                    related_name="images", blank=True)
     url_example = models.URLField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.SET_NULL, null=True,
+                             related_name="projects", blank=True)
+
+    def __str__(self):
+        return self.title
