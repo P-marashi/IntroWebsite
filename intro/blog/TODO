@@ -1,0 +1,7 @@
+ WRITE MODEL [ + ]
+ WRITE VIEW [ + ]
+ WRITE SERIALIZERS [ + ]
+ WRITE URLS [ + ]
+ WRITE ADMIN  [ + ]
+ TEST [ - ]
+ ADD APPS TO SETTING [ + ]

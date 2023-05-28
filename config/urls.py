@@ -24,8 +24,8 @@ urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
     path('api/v1/', include([
         path('auth/', include('intro.users.urls')),
-        # path('blog/', include('intro.blog.urls')),
-        # path('support/', include('intro.support.urls')),
+        path('blog/', include('intro.blog.urls')),
+        path('support/', include('intro.support.urls')),
         path('projects/', include('intro.projects.urls')),
         path('schemas/', include([
             path('', SpectacularAPIView.as_view(), name='schema'),
@@ -34,3 +34,4 @@ urlpatterns = [
         ]))
     ]))
 ]
+
