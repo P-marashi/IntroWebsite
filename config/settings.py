@@ -32,7 +32,6 @@ if DEBUG:
     ALLOWED_HOSTS = \
         [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "172.19.0.2"]
     INTERNAL_IPS = ALLOWED_HOSTS
-    print(ALLOWED_HOSTS)
 else:
     ALLOWED_HOSTS = []
 
