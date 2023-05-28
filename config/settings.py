@@ -39,12 +39,14 @@ else:
 
 # Application definition
 LOCAL_APPS = [
+    "intro.blog.apps.BlogConfig",
+    "intro.chat.apps.ChatConfig",
     "intro.core.apps.CoreConfig",
     "intro.projects.apps.ProjectsConfig",
+    "intro.support.apps.SupportConfig",
     "intro.users.apps.UsersConfig",
     "intro.utils.apps.UtilsConfig",
-    "intro.blog.apps.BlogConfig",
-    "intro.support.apps.SupportConfig",
+    "intro.web.apps.WebConfig",
 ]
 
 THIRD_PARTY_APPS = [
