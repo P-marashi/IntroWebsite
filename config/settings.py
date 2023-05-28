@@ -24,7 +24,18 @@ SECRET_KEY = 'django-insecure-g+j07ce19zj-t6a70!tzt$p(gu%v3g4^m-1)+nv1e05(a^f0*#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+# Django Debug Toolbar configurations
+if DEBUG:
+    import socket  # only if you haven't already imported this
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    ALLOWED_HOSTS = \
+        [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "172.19.0.2"]
+    INTERNAL_IPS = ALLOWED_HOSTS
+    print(ALLOWED_HOSTS)
+else:
+    ALLOWED_HOSTS = []
+
 
 # Application definition
 LOCAL_APPS = [
@@ -87,6 +98,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -158,9 +170,3 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
 }
-
-
-# Django Debug Toolbar configurations
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
