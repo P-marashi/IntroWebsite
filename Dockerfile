@@ -14,6 +14,8 @@ COPY ./requirements/ /tmp/requirements
 
 ARG DEBUG=False
 
+EXPOSE 8000
+
 RUN python -m venv /py && \
         /py/bin/pip install --upgrade pip && \
         if [ $DEBUG == "False" ]; then \
@@ -27,5 +29,3 @@ RUN python -m venv /py && \
 USER django_intro
 
 ENV PATH "/py/bin:$PATH"
-
-EXPOSE 8000
