@@ -47,3 +47,17 @@ class Projects(BaseModel):
 
     def __str__(self):
         return self.title
+
+
+class Comments(BaseModel):
+    """ Comment system for project model """
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, related_name="comments")
+    project = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                on_delete=models.CASCADE, related_name="project_comments")
+    title = models.CharField(max_length=100)
+    text = models.TextField(max_length=500)
+
+    def __str__(self):
+        return self.title

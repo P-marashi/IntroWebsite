@@ -79,7 +79,7 @@ class DashboardAPIView(APIView):
                 'users': user
             }
         return StatsSerializer(stats)
-    
+
     @extend_schema(request=EmptySerializer, responses={200: StatsSerializer})
     def get(self, request):
         serializer = self.get_serializer()
