@@ -1,5 +1,9 @@
+import base64
+
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -81,10 +85,13 @@ class Register(APIView):
         serializer = serializers.RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         login_method = serializer.validated_data.get('login_method')
+        print(login_method)
         password = serializer.validated_data.get('password')
         phone_or_email = is_phone_or_email(login_method)
-        otp = otp_generator
+        otp = otp_generator()
+        print(otp)
         cache_otp(login_method, otp)
+        print(login_method)
         if phone_or_email == "email":
             user = get_user_model().objects.create_user(email=login_method,
                                                         password=password)
@@ -96,7 +103,7 @@ class Register(APIView):
         url = one_time_token_generator.make_token(user)
         return Response(data=serializers.VerifyURLSerializer(
             {'url': url}
-        ), status=status.HTTP_201_CREATED)
+        ).data, status=status.HTTP_201_CREATED)
 
 
 class VerifyRegsiter(APIView):
@@ -114,7 +121,12 @@ class VerifyRegsiter(APIView):
     }, parameters=ONE_TIME_LINK_API_PARAMETERS)
     def post(self, request, uidb64, token):
         """ Accept post request for verifying users registration """
-        user = one_time_token_generator.decode_token(uidb64)
+        # user = one_time_token_generator.decode_token(uidb64)
+        print(uidb64, type(uidb64))
+        uid = base64.urlsafe_b64decode(uidb64)
+        print(uid)
+        # uid = force_str(urlsafe_base64_decode(uidb64))
+        user = get_user_model().objects.get(pk=uid)
         if user and one_time_token_generator.check_token(token):
             serializer = serializers.RegisterVerifySerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -124,11 +136,11 @@ class VerifyRegsiter(APIView):
             )
             user.is_active = True
             user.save()
-            return Response(data=serializers.UserSerializer(user),
+            return Response(data=serializers.UserSerializer(user).data,
                             status=status.HTTP_200_OK)
         return Response(data=serializers.ErrorSerializer({
             'error': 'Url activation token is expired.'
-        }), status=status.HTTP_403_FORBIDDEN)
+        }).data, status=status.HTTP_403_FORBIDDEN)
 
 
 class ChangePassword(APIView):

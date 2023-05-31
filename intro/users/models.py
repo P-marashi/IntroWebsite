@@ -1,6 +1,9 @@
+from django.contrib.auth import get_user_model
+
 from django.contrib.auth import models as AuthModels
 from django.core.validators import EmailValidator
 from django.db import models
+from django.db.models import Q
 
 from intro.core.models import BaseModel
 
@@ -9,7 +12,9 @@ class UserManager(AuthModels.BaseUserManager):
     """ Custom User Manager extends BaseUserManager """
     def _create_user(self, email=None, phone_number=None,
                      password=None, **extra_fields):
+        print(extra_fields)
         if email:
+            email = self.normalize_email(email)
             user = self.model(
                 email=email,
                 **extra_fields
@@ -31,11 +36,16 @@ class UserManager(AuthModels.BaseUserManager):
 
     def create_user(self, email=None, phone_number=None,
                     password=None, **extra_fields):
+        user = get_user_model().objects.get(Q(email=email) |
+                                            Q(phone_number=phone_number),
+                                            is_active=False)
+        if user:
+            return user
         extra_fields.setdefault("is_active", False)
         extra_fields.setdefault("is_superuser", False)
         extra_fields.setdefault("is_admin", False)
         return self._create_user(email=email, phone_number=phone_number,
-                                 password=password, extra_fields=extra_fields)
+                                 password=password, **extra_fields)
 
     def create_admin(self, email=None, phone_number=None,
                      password=None, **extra_fields):
@@ -43,7 +53,7 @@ class UserManager(AuthModels.BaseUserManager):
         extra_fields.setdefault("is_superuser", False)
         extra_fields.setdefault("is_admin", True)
         return self._create_user(email=email, phone_number=phone_number,
-                                 password=password, extra_fields=extra_fields)
+                                 password=password, **extra_fields)
 
     def create_superuser(self, email=None, phone_number=None,
                          password=None, **extra_fields):
@@ -51,7 +61,7 @@ class UserManager(AuthModels.BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_admin", True)
         return self._create_user(email=email, phone_number=phone_number,
-                                 password=password, extra_fields=extra_fields)
+                                 password=password, **extra_fields)
 
 
 # Create your models here.

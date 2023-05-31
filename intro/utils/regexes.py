@@ -18,8 +18,17 @@ def is_phone_or_email(method):
     bool-> False 
     when condition is False the False value will return
     """
-    if re.match(PHONE_NUMBER_REGEX, method):
+    # if re.match(PHONE_NUMBER_REGEX, method):
+        # return "phone"
+    # elif re.match(EMAIL_REGEX, method):
+        # return "email"
+    # return False
+
+    try:
+        phone = int(method)
         return "phone"
-    elif re.match(EMAIL_REGEX, method):
+    except:
+        email = method
         return "email"
-    return False
+    finally:
+        return "email"

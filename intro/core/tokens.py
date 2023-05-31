@@ -1,4 +1,5 @@
 import six
+
 from django.contrib.auth import get_user_model
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
@@ -21,8 +22,8 @@ class OneTimeTokenGenerator(PasswordResetTokenGenerator):
     def decode_token(self, uidb64):
         """ decode hashed token """
         uid = force_str(urlsafe_base64_decode(uidb64))
-        user = get_user_model().objects.get(pk=uid)
-        return user
+        # user = get_user_model().objects.get(pk=uid)
+        # return user
 
 
 # declaring its variable to access it easily in everywhere of project

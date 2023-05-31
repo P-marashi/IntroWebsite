@@ -22,7 +22,7 @@ class OTPCodeValidator:
         return "<%s(code=%s)>" % (self.__class__.__name__, self.code)
 
 
-def password_match_checker(password, passworc_confirm):
+def password_match_checker(password, password_confirm):
     """ password similarity checker
         raise Validation error when passwords arent match
     ...
@@ -39,6 +39,6 @@ def password_match_checker(password, passworc_confirm):
     ------
     serializers.ValidationError Exception
     """
-    if password != passworc_confirm:
+    if password != password_confirm:
         raise serializers.ValidationError("Passwords arent match")
     return 1

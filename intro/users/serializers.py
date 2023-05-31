@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth import password_validation
+from django.contrib.auth.password_validation import validate_password
 
 from rest_framework import serializers
 
@@ -10,21 +10,21 @@ from intro.utils.regexes import is_phone_or_email
 
 
 class BaseAuthSerializer(serializers.Serializer):
-    """ The base of all Auth serializers
+    """ The base of all Auth serializersimport django.contrib.auth.password_validation as validators
         that contains login_method for both
         email/phone authentications
     """
 
     login_method = serializers.CharField()
 
-    def validate_login_method(self, validated_data):
+    def validate_login_method(self, login_method):
         """ custom validator for login_method
             raise ValidationError when login_method
             is not email and phone number
         """
-        if not is_phone_or_email(validated_data.get("login_method")):
+        if not is_phone_or_email(login_method):
             raise serializers.ValidationError("Email or Phone number is not correct!")
-        return validated_data
+        return login_method
 
 
 class LoginSerializer(BaseAuthSerializer):
@@ -36,15 +36,14 @@ class LoginSerializer(BaseAuthSerializer):
 class RegisterSerializer(BaseAuthSerializer):
     """ Serializer for Register API """
 
-    password = serializers.CharField(validators=[
-        password_validation.UserAttributeSimilarityValidator,
-        password_validation.MinimumLengthValidator,
-        password_validation.CommonPasswordValidator,
-        password_validation.NumericPasswordValidator,
-    ])
+    password = serializers.CharField()
     password_confirm = serializers.CharField()
 
-    def validate_password(self, validated_data):
+    def validate_password(self, password):
+        validate_password(password=password)
+        return password
+
+    def validate(self, validated_data):
         """ custom validation error for passwords
             raising validation error when passwords
             are not match
@@ -61,7 +60,7 @@ class RegisterVerifySerializer(BaseAuthSerializer):
 
     code = serializers.CharField(validators=[OTPCodeValidator])
 
-    def validate_code(self, validated_data):
+    def validate(self, validated_data):
         """ custom validation error for code
             raise validaiton error when code
             is expired or not valid
@@ -85,15 +84,13 @@ class ResetPasswordVerifySerializer(serializers.Serializer):
     """ Serializer for verifying users password reset """
 
     code = serializers.CharField(validators=[OTPCodeValidator])
-    password = serializers.CharField(validators=[
-        password_validation.UserAttributeSimilarityValidator,
-        password_validation.MinimumLengthValidator,
-        password_validation.CommonPasswordValidator,
-        password_validation.NumericPasswordValidator,
-    ])
+    password = serializers.CharField()
     password_confirm = serializers.CharField()
 
-    def validate_code(self, validated_data):
+    def validate_password(self, password):
+        return validate_password(password=password)
+
+    def validate(self, validated_data):
         """ custom validation error for code
             raise validaiton error when code
             is expired or not valid
@@ -123,13 +120,11 @@ class ChangePasswordSerializer(serializers.Serializer):
     """ Serializer for changing password API """
 
     old_password = serializers.CharField()
-    password = serializers.CharField(validators=[
-        password_validation.UserAttributeSimilarityValidator,
-        password_validation.MinimumLengthValidator,
-        password_validation.CommonPasswordValidator,
-        password_validation.NumericPasswordValidator,
-    ])
+    password = serializers.CharField()
     password_confirm = serializers.CharField()
+
+    def validate_password(self, password):
+        return validate_password(password=password)
 
     def validate_old_password(self, validated_data):
         """ custom validation for checking
