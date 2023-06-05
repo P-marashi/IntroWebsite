@@ -4,12 +4,76 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-
+from rest_framework.exceptions import NotFound
 from drf_spectacular.utils import extend_schema
 from intro.core.serializers import EmptySerializer
 
 from .models import BlogPost
-from .serializers import BlogPostSerializer
+from .serializers import BlogPostSerializer, CategorySerializer
+
+
+@extend_schema(request=EmptySerializer, responses={
+    201: BlogPostSerializer}, tags=["Blog End-point"])
+class CategoryAPIView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serializer = "CategorySerializer"
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(request=EmptySerializer, responses={
+    201: BlogPostSerializer}, tags=["Blog End-point"])
+class CategoryDetailAPI(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get_object(self, slug):
+        """
+        Get the blog post object based on the provided slug.
+        """
+
+        try:
+            return BlogPost.objects.get(slug=slug)
+        except BlogPost.DoesNotExist:
+            raise NotFound
+
+    @extend_schema(request=EmptySerializer, responses={
+        200: BlogPostSerializer})
+    def get(self, request, slug):
+        """
+        Retrieve the details of a blog post.
+        """
+
+        blog_post = self.get_object(slug)
+        serializer = CategorySerializer(blog_post)
+        return Response(serializer.data)
+
+    @extend_schema(request=EmptySerializer, responses={
+        200: BlogPostSerializer})
+    def put(self, request, slug):
+        """
+        Update the details of a blog post.
+        """
+
+        blog_post = self.get_object(slug)
+        serializer = CategorySerializer(blog_post, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(request=EmptySerializer, responses={204: EmptySerializer})
+    def delete(self, request, slug):
+        """
+        Delete a blog post.
+        """
+
+        blog_post = self.get_object(slug)
+        blog_post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @extend_schema(tags=["Blog End-point"])
