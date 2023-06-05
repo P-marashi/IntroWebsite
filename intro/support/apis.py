@@ -12,6 +12,7 @@ from .models import Ticket, Answer
 from .serializers import TicketSerializer, AnswerSerializer
 
 
+@extend_schema(tags=["Supports End-point"])
 class TicketListCreateAPIView(APIView):
     """ An APIView for create and list Tickets """
 
@@ -44,6 +45,7 @@ class TicketListCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(tags=["Supports End-point"])
 class TicketDetailAPIView(APIView):
     """ An APIView for Retrieve, Update, Destroy Tickets """
 
@@ -105,6 +107,7 @@ class TicketDetailAPIView(APIView):
             )
 
 
+@extend_schema(tags=["Supports End-point"])
 class AnswerListCreateAPIView(APIView):
     """ An APIView for create and list answer objects """
 
@@ -133,6 +136,7 @@ class AnswerListCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(tags=["Supports End-point"])
 class AnswerDetailAPIView(APIView):
     """ An APIView for Update, Destroy, Retrive Answers objects """
 

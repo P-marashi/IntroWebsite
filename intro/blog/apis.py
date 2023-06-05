@@ -12,6 +12,7 @@ from .models import BlogPost
 from .serializers import BlogPostSerializer
 
 
+@extend_schema(tags=["Blog End-point"])
 class BlogPostCreateAPIView(APIView):
     """
     API view for creating a new blog post.
@@ -34,6 +35,7 @@ class BlogPostCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(tags=["Blog End-point"])
 class BlogPostListAPIView(APIView):
     """
     API view for retrieving a list of all blog posts.
@@ -51,6 +53,7 @@ class BlogPostListAPIView(APIView):
         return Response(serializer.data)
 
 
+@extend_schema(tags=["Blog End-point"])
 class BlogPostRetrieveUpdateDestroyAPIView(APIView):
     """
     API view for retrieving, updating, and deleting an individual blog post.

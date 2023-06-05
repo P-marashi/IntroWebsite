@@ -13,12 +13,13 @@ from . import serializers
 from . import models
 
 
+@extend_schema(tags=["Projects End-point"])
 class ListCreateProjectAPIView(APIView):
     """
     an APIView for List and Creating Projects Model
     """
 
-    permission_classes = (IsAdminOrSelfOrReadOnly, )
+    permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.ProjectSerializer, responses={
         201: serializers.ProjectSerializer
@@ -42,11 +43,11 @@ class ListCreateProjectAPIView(APIView):
         serializer = serializers.ProjectSerializer(projects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+@extend_schema(tags=["Projects End-point"])
 class RetrieveUpdateDestroyProjectAPIView(APIView):
     """ An APIView for retrieving, updating, destroying projects """
 
-    permission_classes = (IsAdminOrSelfOrReadOnly, )
+    permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.ProjectSerializer, responses={
         200: serializers.ProjectSerializer
@@ -76,11 +77,11 @@ class RetrieveUpdateDestroyProjectAPIView(APIView):
         project.delete()
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
 
-
+@extend_schema(tags=["Projects End-point"])
 class ListCreateProjectFeatureAPIView(APIView):
     """ An APIView for Listing and Creating Project Features """
 
-    permission_classes = (IsAdminOrSelfOrReadOnly, )
+    permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.FeatureSerializer, responses={
         201: serializers.ProjectSerializer
@@ -105,11 +106,11 @@ class ListCreateProjectFeatureAPIView(APIView):
         serializer = serializers.FeatureSerializer(project.features, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+@extend_schema(tags=["Projects End-point"])
 class UpdateDestroyProjectFeatureAPIView(APIView):
     """ An APIView for updating, destroying project feature """
 
-    permission_classes = (IsAdminOrSelfOrReadOnly, )
+    permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.FeatureSerializer, responses={
         200: serializers.ProjectSerializer
@@ -133,11 +134,11 @@ class UpdateDestroyProjectFeatureAPIView(APIView):
         project.features.save()
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
 
-
+@extend_schema(tags=["Projects End-point"])
 class ListCreateProjectImageExampleAPIView(APIView):
     """ An APIView for Creating and listing Project Images """
 
-    permission_classes = (IsAdminOrSelfOrReadOnly, )
+    permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.ImageSerializer, responses={
         201: serializers.ProjectSerializer
@@ -162,11 +163,11 @@ class ListCreateProjectImageExampleAPIView(APIView):
         serializer = serializers.ImageSerializer(project.images, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+@extend_schema(tags=["Projects End-point"])
 class UpdateDestroyProjectImageExampleAPIView(APIView):
     """ An APIView for Updating, destroying project image """
 
-    permission_classes = (IsAdminOrSelfOrReadOnly, )
+    permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.ImageSerializer, responses={
         200: serializers.ProjectSerializer

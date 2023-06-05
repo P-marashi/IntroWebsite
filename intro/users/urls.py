@@ -6,7 +6,7 @@ from . import apis
 
 
 urlpatterns = [
-    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('refresh/', TokenRefreshView.as_view(), name='token_refresh',),
     path('login/', apis.Login.as_view(), name="login"),
     path('register/', apis.Register.as_view(), name="register"),
     path('register/verify/<uidb64>/<token>/',

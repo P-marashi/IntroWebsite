@@ -19,10 +19,11 @@ from .serializers import StatsSerializer
 
 
 # Create your views here.
+@extend_schema(tags=["web End-point"])
 class IndexAPIView(APIView):
     """ Intro project root API """
 
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     @extend_schema(request=EmptySerializer, responses={200: StatsSerializer})
     def get(self, request):
@@ -44,10 +45,11 @@ class IndexAPIView(APIView):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
+@extend_schema(tags=["web End-point"])
 class DashboardAPIView(APIView):
     """ An APIView for users dashboards """
 
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer(self):
         if self.request.is_superuser:
