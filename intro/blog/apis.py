@@ -6,7 +6,9 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from drf_spectacular.utils import extend_schema
+
 from intro.core.serializers import EmptySerializer
+from intro.utils.renderer import UserRenderer
 
 from .models import BlogPost
 from .serializers import BlogPostSerializer, CategorySerializer
@@ -15,10 +17,11 @@ from .serializers import BlogPostSerializer, CategorySerializer
 @extend_schema(request=EmptySerializer, responses={
     201: BlogPostSerializer}, tags=["Blog End-point"])
 class CategoryAPIView(APIView):
+    renderer_classes = [UserRenderer]
     permission_classes = [IsAdminUser]
 
     def post(self, request):
-        serializer = "CategorySerializer"
+        serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -28,6 +31,7 @@ class CategoryAPIView(APIView):
 @extend_schema(request=EmptySerializer, responses={
     201: BlogPostSerializer}, tags=["Blog End-point"])
 class CategoryDetailAPI(APIView):
+    renderer_classes = [UserRenderer]
     permission_classes = [IsAdminUser]
 
     def get_object(self, slug):
@@ -84,6 +88,7 @@ class BlogPostCreateAPIView(APIView):
     """
 
     permission_classes = [IsAdminUser]
+    renderer_classes = [UserRenderer]
 
     @extend_schema(request=EmptySerializer, responses={
         201: BlogPostSerializer})
@@ -104,6 +109,7 @@ class BlogPostListAPIView(APIView):
     """
     API view for retrieving a list of all blog posts.
     """
+    renderer_classes = [UserRenderer]
 
     @extend_schema(request=EmptySerializer, responses={
         200: BlogPostSerializer})
@@ -124,6 +130,7 @@ class BlogPostRetrieveUpdateDestroyAPIView(APIView):
     Only accessible by admin users.
     """
 
+    renderer_classes = [UserRenderer]
     permission_classes = [IsAdminUser]
 
     def get_object(self, slug):

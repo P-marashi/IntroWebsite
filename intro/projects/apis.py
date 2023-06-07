@@ -18,7 +18,7 @@ class ListCreateProjectAPIView(APIView):
     """
     an APIView for List and Creating Projects Model
     """
-
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.ProjectSerializer, responses={
@@ -47,6 +47,7 @@ class ListCreateProjectAPIView(APIView):
 class RetrieveUpdateDestroyProjectAPIView(APIView):
     """ An APIView for retrieving, updating, destroying projects """
 
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.ProjectSerializer, responses={
@@ -80,6 +81,7 @@ class RetrieveUpdateDestroyProjectAPIView(APIView):
 @extend_schema(tags=["Projects End-point"])
 class ListCreateProjectFeatureAPIView(APIView):
     """ An APIView for Listing and Creating Project Features """
+    renderer_classes = [UserRenderer]
 
     permission_classes = (IsAdminOrSelfOrReadOnly,)
 
@@ -109,7 +111,7 @@ class ListCreateProjectFeatureAPIView(APIView):
 @extend_schema(tags=["Projects End-point"])
 class UpdateDestroyProjectFeatureAPIView(APIView):
     """ An APIView for updating, destroying project feature """
-
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.FeatureSerializer, responses={
@@ -137,7 +139,7 @@ class UpdateDestroyProjectFeatureAPIView(APIView):
 @extend_schema(tags=["Projects End-point"])
 class ListCreateProjectImageExampleAPIView(APIView):
     """ An APIView for Creating and listing Project Images """
-
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.ImageSerializer, responses={
@@ -166,7 +168,7 @@ class ListCreateProjectImageExampleAPIView(APIView):
 @extend_schema(tags=["Projects End-point"])
 class UpdateDestroyProjectImageExampleAPIView(APIView):
     """ An APIView for Updating, destroying project image """
-
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly,)
 
     @extend_schema(request=serializers.ImageSerializer, responses={

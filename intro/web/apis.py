@@ -22,7 +22,7 @@ from .serializers import StatsSerializer
 @extend_schema(tags=["web End-point"])
 class IndexAPIView(APIView):
     """ Intro project root API """
-
+    renderer_classes = [UserRenderer]
     permission_classes = (AllowAny,)
 
     @extend_schema(request=EmptySerializer, responses={200: StatsSerializer})
@@ -48,7 +48,7 @@ class IndexAPIView(APIView):
 @extend_schema(tags=["web End-point"])
 class DashboardAPIView(APIView):
     """ An APIView for users dashboards """
-
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAuthenticated,)
 
     def get_serializer(self):
