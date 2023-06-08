@@ -6,16 +6,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 class EmailOrPhoneNumberAuthentication:
     """ Custom Backend for both email and phone_number """
-    
+
     @staticmethod
-    def authenticate(email: str = None,
-                     phone_number: str = None, password: str = None):
-        """
-        check user login method and password
-        """
+    def authenticate(login_method: str, password: str):
+        """ check user login method and password """
         try:
             user = get_user_model().objects.get(
-                Q(phone_number=phone_number) | Q(email=email)
+                Q(phone_number=login_method) | Q(email=login_method)
             )
         except get_user_model().DoesNotExist:
             return None
@@ -28,7 +25,11 @@ class EmailOrPhoneNumberAuthentication:
     @staticmethod
     def generate_token(user):
         """ Generate jwt token for given user """
-        return RefreshToken.for_user(user)
+        refresh = RefreshToken.for_user(user)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
     @staticmethod
     def set_blacklist_token(refresh_token):

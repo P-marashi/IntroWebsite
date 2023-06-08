@@ -1,47 +1,6 @@
 version: '3.9'
 
 services:
-  intro:
-    build:
-      context: .
-      dockerfile: .Dockerfile
-      args:
-        - DEBUG=True
-    ports:
-      - "8000:8000"
-    volumes:
-      - ".:/intro"
-    depends_on:
-      - db
-      - redis
-      - celery
-      - prometheus
-      - grafana
-    command: sh -c "python manage.py runserver 0.0.0.0:8000"
-
-  prometheus:
-    image: prom/prometheus
-    restart: 'no'
-    volumes:
-      - prometheus_data:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - 9090:9090
-    network_mode: host
-  
-  grafana:
-    image: grafana/grafana
-    environment:
-      GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-simple-json-datasource"
-    restart: 'no'
-    volumes:
-      - grafana_data:/var/lib/grafana
-    ports:
-      - 3000:3000
-    depends_on:
-      - prometheus
-    network_mode: host
-  
   db:
     image: postgres:14.1-alpine
     restart: always
@@ -50,33 +9,69 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - '5432:5432'
-    volumes: 
+    volumes:
       - db:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
-  
+
   redis:
-    image: redis:6.2-alpine
+    image: redis:7-alpine
     restart: always
     ports:
       - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-    volumes: 
-      - cache:/data
-
-  celery:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: madefire/chordtest
-    command: ['celery', 'worker', '-A', 'app.app', '-l', 'info']
-    environment:
-      - BROKER_URL=redis://redis:6379/0
-      - RESULT_BACKEND=redis://redis:6379/0
-      - C_FORCE_ROOT=true
+    command: redis-server
     volumes:
-      - ./:/app/
+      - redis:/data
+  
+  celery:
+    build: .
+    restart: always
+    command: celery -A config worker -l info
+    volumes:
+      - .:/app
     depends_on:
       - redis
 
+  prometheus:
+    image: prom/prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+    restart: unless-stopped
+
+  intro:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DEBUG=True
+    command: sh -c python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/intro
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - celery
+      - prometheus
+      - grafana
+
 volumes:
-    prometheus_data: {}
+  db: {}
+  redis: {}
+  prometheus_data: {}
+  grafana_data: {}

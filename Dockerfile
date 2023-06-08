@@ -14,18 +14,7 @@ COPY ./requirements/ /tmp/requirements
 
 ARG DEBUG=False
 
-RUN python -m venv /py && \
-        /py/bin/pip install --upgrade pip && \
-        if [ $DEBUG == "False" ]; then \
-            /py/bin/pip install -r /tmp/requirements/production.txt; \
-        else \
-            /py/bin/pip install -r /tmp/requirements/dev.txt; \
-        fi && \
-        rm -rf /tmp && \
-        adduser --disabled-password --no-create-home django_intro
-
-USER django_intro
-
-ENV PATH "/py/bin:$PATH"
+RUN --mount=type=cache,target=/root/.cache \
+    pip --timeout=60 install -r /tmp/requirements/dev.txt
 
 EXPOSE 8000

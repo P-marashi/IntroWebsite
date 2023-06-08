@@ -12,7 +12,9 @@ class UserManager(AuthModels.BaseUserManager):
     """ Custom User Manager extends BaseUserManager """
     def _create_user(self, email=None, phone_number=None,
                      password=None, **extra_fields):
-        print(extra_fields)
+        """ Main and private function for storing
+            user information on database
+        """
         if email:
             email = self.normalize_email(email)
             user = self.model(
@@ -34,13 +36,17 @@ class UserManager(AuthModels.BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email=None, phone_number=None,
-                    password=None, **extra_fields):
-        user = get_user_model().objects.get(Q(email=email) |
-                                            Q(phone_number=phone_number),
-                                            is_active=False)
+    def create_user(self, email=None, phone_number=None, password=None, **extra_fields):
+        try:
+            user = get_user_model().objects.get(Q(email=email) |
+                                                Q(phone_number=phone_number),
+                                                is_active=False)
+        except get_user_model().DoesNotExist:
+            user = None
+
         if user:
             return user
+
         extra_fields.setdefault("is_active", False)
         extra_fields.setdefault("is_superuser", False)
         extra_fields.setdefault("is_admin", False)
@@ -69,14 +75,19 @@ class User(BaseModel, AuthModels.AbstractBaseUser, AuthModels.PermissionsMixin):
     """ Custom Django User Model
         that extends of AbstractBaseUser
     """
+    REGISTRATION_TYPE = (
+        ('E', 'Email'),
+        ('P', 'Phone'),
+    )
     profile_photo = models.ImageField(upload_to="users/images/",
                                       null=True, blank=True)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     phone_number = models.CharField(max_length=11,
-                                    unique=True, null=True, blank=True)
+                                    unique=True, null=True, blank=True, db_index=1)
     email = models.EmailField(validators=[EmailValidator],
-                              unique=True, null=True, blank=True)
+                              unique=True, null=True, blank=True, db_index=1)
+    registration_type = models.CharField(choices=REGISTRATION_TYPE, max_length=2)
     about = models.CharField(max_length=300, null=True, blank=True)
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -87,7 +98,7 @@ class User(BaseModel, AuthModels.AbstractBaseUser, AuthModels.PermissionsMixin):
     USERNAME_FIELD = "email"
 
     def __str__(self):
-        return self.full_name
+        return self.email or self.phone_number
 
     @property
     def is_staff(self):

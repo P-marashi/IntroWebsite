@@ -1,3 +1,6 @@
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+
 from rest_framework import serializers
 
 
@@ -42,3 +45,16 @@ def password_match_checker(password, password_confirm):
     if password != password_confirm:
         raise serializers.ValidationError("Passwords arent match")
     return 1
+
+
+def check_user_existence(login_method):
+    try:
+        user = get_user_model().objects.values("is_active").get(
+            Q(email=login_method) |
+            Q(phone_number=login_method)
+        )
+        if user['is_active']:
+            return 1
+        return 0
+    except get_user_model().DoesNotExist:
+        return 0
