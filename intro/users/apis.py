@@ -1,9 +1,5 @@
-import base64
-
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from django.utils.encoding import force_str
-from django.utils.http import urlsafe_base64_decode
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -59,15 +55,15 @@ class Login(APIView):
         serializer.is_valid(raise_exception=True)
         login_method = serializer.validated_data.get('login_method')
         password = serializer.validated_data.get('password')
-        user = AUTH.authenticate(request, is_phone_or_email(login_method),
+        user = AUTH.authenticate(login_method=login_method,
                                  password=password)
         if user.is_active:
             tokens = AUTH.generate_token(user)
-            return Response(data=serializers.TokenSerializer(tokens),
+            return Response(data=serializers.TokenSerializer(tokens).data,
                             status=status.HTTP_200_OK)
         return Response(data=serializers.ErrorSerializer({
             'error': 'User not found'
-        }), status=status.HTTP_404_NOT_FOUND)
+        }).data, status=status.HTTP_404_NOT_FOUND)
 
 
 class Register(APIView):
@@ -85,22 +81,24 @@ class Register(APIView):
         serializer = serializers.RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         login_method = serializer.validated_data.get('login_method')
-        print(login_method)
         password = serializer.validated_data.get('password')
+        registration_type = serializer.validated_data.get('registration_type')
         phone_or_email = is_phone_or_email(login_method)
         otp = otp_generator()
-        print(otp)
         cache_otp(login_method, otp)
-        print(login_method)
         if phone_or_email == "email":
-            user = get_user_model().objects.create_user(email=login_method,
-                                                        password=password)
+            user = get_user_model().objects.create_user(
+                email=login_method, password=password,
+                registration_type=registration_type
+            )
             send_otp_email.delay(login_method, otp)
         elif phone_or_email == "phone":
             user = get_user_model().objects.create_user(
-                phone_number=login_method, password=password)
+                phone_number=login_method, password=password,
+                registration_type=registration_type
+            )
             send_otp_mobile.delay(login_method, otp)
-        url = one_time_token_generator.make_token(user)
+        url = one_time_token_generator.create_url_activation(user)
         return Response(data=serializers.VerifyURLSerializer(
             {'url': url}
         ).data, status=status.HTTP_201_CREATED)
@@ -121,19 +119,11 @@ class VerifyRegsiter(APIView):
     }, parameters=ONE_TIME_LINK_API_PARAMETERS)
     def post(self, request, uidb64, token):
         """ Accept post request for verifying users registration """
-        # user = one_time_token_generator.decode_token(uidb64)
-        print(uidb64, type(uidb64))
-        uid = base64.urlsafe_b64decode(uidb64)
-        print(uid)
-        # uid = force_str(urlsafe_base64_decode(uidb64))
-        user = get_user_model().objects.get(pk=uid)
-        if user and one_time_token_generator.check_token(token):
-            serializer = serializers.RegisterVerifySerializer(data=request.data)
+        user = one_time_token_generator.check_url_token(uidb64, token)
+        if user:
+            serializer = serializers.RegisterVerifySerializer(data=request.data,
+                                                              context={'user': user})
             serializer.is_valid(raise_exception=True)
-            login_method = serializer.validated_data.get('login_method')
-            user = get_user_model().objects.get(
-                Q(email=login_method) | Q(phone_number=login_method)
-            )
             user.is_active = True
             user.save()
             return Response(data=serializers.UserSerializer(user).data,
@@ -155,12 +145,13 @@ class ChangePassword(APIView):
         200: serializers.UserSerializer})
     def put(self, request):
         """ Accept put request for changing users password """
-        serializer = serializers.ChangePasswordSerializer(data=request.data)
+        serializer = serializers.ChangePasswordSerializer(data=request.data,
+                                                          context={'request': request})
         serializer.is_valid(raise_exception=True)
         password = serializer.validated_data.get('password_confirm')
         request.user.set_password(password)
         request.user.save()
-        return Response(data=serializers.UserSerializer(request.user),
+        return Response(data=serializers.UserSerializer(request.user).data,
                         status=status.HTTP_200_OK)
 
 
@@ -181,7 +172,7 @@ class ResetPassword(APIView):
         serializer.is_valid(raise_exception=True)
         login_method = serializer.validated_data.get('login_method')
         phone_or_email = is_phone_or_email(login_method)
-        otp = otp_generator
+        otp = otp_generator()
         cache_otp(login_method, otp)
         user = get_user_model().objects.get(Q(email=login_method) |
                                             Q(phone_number=login_method))
@@ -189,10 +180,10 @@ class ResetPassword(APIView):
             send_otp_email.delay(login_method, otp)
         elif phone_or_email == "phone":
             send_otp_mobile.delay(login_method, otp)
-        url = one_time_token_generator.make_token(user)
-        return Response(data=serializers.VerifyURLSerializer(
+        url = one_time_token_generator.create_url_activation(user)
+        return Response(serializers.VerifyURLSerializer(
             {'url': url}
-        ), status=status.HTTP_201_CREATED)
+        ).data, status=status.HTTP_200_OK)
 
 
 class ResetPasswordVerify(APIView):
@@ -209,17 +200,19 @@ class ResetPasswordVerify(APIView):
     }, parameters=ONE_TIME_LINK_API_PARAMETERS)
     def post(self, request, uidb64, token):
         """ Accept post request for verifying users password reset """
-        serializer = serializers.ResetPasswordVerifySerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        password = serializer.validated_data.get('password_confirm')
-        user = one_time_token_generator.decode_token(uidb64)
-        if user and one_time_token_generator.check_token(token):
+        user = one_time_token_generator.check_url_token(uidb64, token)
+        if user:
+            serializer = serializers.ResetPasswordVerifySerializer(data=request.data,
+                                                                   context={'user': user})
+            serializer.is_valid(raise_exception=True)
+            password = serializer.validated_data.get('password_confirm')
             user.set_password(password)
             user.save()
-            return Response(data=serializers.UserSerializer, status=status.HTTP_200_OK)
-        return Response(data=serializers.TokenExpiredErrorSerializer(
-            {'token': 'Url activation token has been expired'}
-        ), status=status.HTTP_403_FORBIDDEN)
+            return Response(data=serializers.UserSerializer(user).data,
+                            status=status.HTTP_200_OK)
+        return Response(serializers.ErrorSerializer({
+            'error': 'url activation token has been expired'
+        }).data, status=status.HTTP_403_FORBIDDEN)
 
 
 class Logout(APIView):
@@ -227,15 +220,19 @@ class Logout(APIView):
 
     permission_classes = (IsAuthenticated, )
 
-    @extend_schema(request=EmptySerializer, responses={
+    @extend_schema(request=serializers.RefreshTokenSerializer, responses={
         205: EmptySerializer, 400: EmptySerializer})
     def post(self, request):
         """ Accept post request for logging out
             set user token to blacklist
         """
+        serializer = serializers.RefreshTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        refresh_token = serializer.validated_data.get('refresh')
         try:
-            refresh_token = request.data["refresh_token"]
             AUTH.set_blacklist_token(refresh_token)
-            return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializers.ErrorSerializer(
+                {'error': 'token is already blacklisted'}
+            ).data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_205_RESET_CONTENT)
