@@ -3,7 +3,7 @@ from rest_framework.test import APIClient
 
 
 @pytest.mark.django_db
-def test_category_post():
+def test_post_category():
     # Create an instance of the APIClient
     client = APIClient()
 
@@ -16,7 +16,7 @@ def test_category_post():
     }
 
     # Send a POST request to create a new category
-    response = client.post('/api/v1/blog/category/list', payload, format='json')
+    response = client.post('/api/v1/blog/category/', payload, format='json')
 
     # Check the response status code and validate the data accordingly
     if response.status_code == 201:
@@ -27,7 +27,7 @@ def test_category_post():
 
 
 @pytest.mark.django_db
-def test_category_get():
+def test_get_category():
     # Create an instance of the APIClient
     client = APIClient()
 

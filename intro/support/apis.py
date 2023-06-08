@@ -6,7 +6,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from drf_spectacular.utils import extend_schema
+
 from intro.core.serializers import EmptySerializer
+from intro.utils.renderer import UserRenderer
 
 from .models import Ticket, Answer
 from .serializers import TicketSerializer, AnswerSerializer
@@ -15,8 +17,8 @@ from .serializers import TicketSerializer, AnswerSerializer
 @extend_schema(tags=["Supports End-point"])
 class TicketListCreateAPIView(APIView):
     """ An APIView for create and list Tickets """
-
-    permission_classes = [IsAuthenticated]
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(request=EmptySerializer, responses={200: TicketSerializer})
     def get(self, request):
@@ -48,8 +50,8 @@ class TicketListCreateAPIView(APIView):
 @extend_schema(tags=["Supports End-point"])
 class TicketDetailAPIView(APIView):
     """ An APIView for Retrieve, Update, Destroy Tickets """
-
-    permission_classes = [IsAuthenticated]
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get_object(self, pk):
         """
@@ -84,7 +86,7 @@ class TicketDetailAPIView(APIView):
         Only the owner of the ticket or an admin can update it.
         """
         ticket = self.get_object(pk)
-        serializer = TicketSerializer(ticket, data=request.data)
+        serializer = TicketSerializer(ticket, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -110,7 +112,7 @@ class TicketDetailAPIView(APIView):
 @extend_schema(tags=["Supports End-point"])
 class AnswerListCreateAPIView(APIView):
     """ An APIView for create and list answer objects """
-
+    renderer_classes = [UserRenderer]
     permission_classes = [IsAdminUser]
 
     @extend_schema(request=EmptySerializer, responses={200: AnswerSerializer})
@@ -139,7 +141,7 @@ class AnswerListCreateAPIView(APIView):
 @extend_schema(tags=["Supports End-point"])
 class AnswerDetailAPIView(APIView):
     """ An APIView for Update, Destroy, Retrive Answers objects """
-
+    renderer_classes = [UserRenderer]
     permission_classes = [IsAdminUser]
 
     def get_object(self, pk):

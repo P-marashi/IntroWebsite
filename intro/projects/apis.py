@@ -8,6 +8,7 @@ from drf_spectacular.utils import extend_schema
 
 from intro.core.serializers import EmptySerializer
 from intro.core.permissions import IsAdminOrSelfOrReadOnly
+from intro.utils.renderer import UserRenderer
 
 from . import serializers
 from . import models
@@ -42,6 +43,7 @@ class ListCreateProjectAPIView(APIView):
         projects = models.Projects.objects.order_by('-id')
         serializer = serializers.ProjectSerializer(projects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 @extend_schema(tags=["Projects End-point"])
 class RetrieveUpdateDestroyProjectAPIView(APIView):
@@ -78,6 +80,7 @@ class RetrieveUpdateDestroyProjectAPIView(APIView):
         project.delete()
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
 
+
 @extend_schema(tags=["Projects End-point"])
 class ListCreateProjectFeatureAPIView(APIView):
     """ An APIView for Listing and Creating Project Features """
@@ -108,6 +111,7 @@ class ListCreateProjectFeatureAPIView(APIView):
         serializer = serializers.FeatureSerializer(project.features, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 @extend_schema(tags=["Projects End-point"])
 class UpdateDestroyProjectFeatureAPIView(APIView):
     """ An APIView for updating, destroying project feature """
@@ -135,6 +139,7 @@ class UpdateDestroyProjectFeatureAPIView(APIView):
         project.features.delete(feature)
         project.features.save()
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
+
 
 @extend_schema(tags=["Projects End-point"])
 class ListCreateProjectImageExampleAPIView(APIView):
@@ -164,6 +169,7 @@ class ListCreateProjectImageExampleAPIView(APIView):
         project = get_object_or_404(models.Projects, pk=project_pk)
         serializer = serializers.ImageSerializer(project.images, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 @extend_schema(tags=["Projects End-point"])
 class UpdateDestroyProjectImageExampleAPIView(APIView):

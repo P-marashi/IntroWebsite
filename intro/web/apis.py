@@ -14,6 +14,7 @@ from intro.blog.models import BlogPost
 from intro.chat.models import Chat
 from intro.support.models import Ticket
 from intro.utils.randoms import RandomGenerator
+from intro.utils.renderer import UserRenderer
 
 from .serializers import StatsSerializer
 
