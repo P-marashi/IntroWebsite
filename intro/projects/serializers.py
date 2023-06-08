@@ -9,9 +9,8 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ImageExamples
         fields = [
+            "pk",
             "image",
-            "updated_at",
-            "created_at",
         ]
 
 
@@ -20,9 +19,8 @@ class FeatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Features
         fields = [
-            "text",
-            "updated_at",
-            "created_at",
+            "pk",
+            "title"
         ]
 
 
@@ -31,6 +29,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Projects
         fields = [
+            "pk",
             "title",
             "slug",
             "description",
@@ -40,4 +39,15 @@ class ProjectSerializer(serializers.ModelSerializer):
             "user",
             "updated_at",
             "created_at",
+        ]
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """ Comment serializer for each project """
+    class Meta:
+        model = models.Comments
+        fields = [
+            "pk",
+            "title",
+            "text",
         ]

@@ -19,27 +19,25 @@ class ListCreateProjectAPIView(APIView):
     """
 
     permission_classes = (IsAdminOrSelfOrReadOnly, )
+    model = models.Projects
+    serializer_class = serializers.ProjectSerializer
 
-    @extend_schema(request=serializers.ProjectSerializer, responses={
-        201: serializers.ProjectSerializer
-    })
+    @extend_schema(request=serializer_class, responses={
+        201: serializer_class})
     def post(self, request):
         """ Create a Project """
-        serializer = serializers.ProjectSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        instance = serializer.save(commit=False)
-        instance.user = request.user
-        instance.save()
-        return Response(serializers.ProjectSerializer(instance).data,
+        instance = serializer.save(user=request.user)
+        return Response(self.serializer_class(instance).data,
                         status=status.HTTP_201_CREATED)
 
     @extend_schema(request=EmptySerializer, responses={
-        200: serializers.ProjectSerializer
-    })
+        200: serializer_class})
     def get(self, request):
         """ List all Projects by reverse ordering """
-        projects = models.Projects.objects.order_by('-id')
-        serializer = serializers.ProjectSerializer(projects, many=True)
+        projects = self.model.objects.order_by('-id')
+        serializer = self.serializer_class(projects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -47,32 +45,32 @@ class RetrieveUpdateDestroyProjectAPIView(APIView):
     """ An APIView for retrieving, updating, destroying projects """
 
     permission_classes = (IsAdminOrSelfOrReadOnly, )
+    model = models.Projects
+    serializer_class = serializers.ProjectSerializer
 
-    @extend_schema(request=serializers.ProjectSerializer, responses={
-        200: serializers.ProjectSerializer
-    })
-    def get(self, request, project_pk):
+    @extend_schema(request=serializer_class, responses={
+        200: serializer_class})
+    def get(self, request, slug):
         """ Retrieve project information by primary key """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        serializer = serializers.ProjectSerializer(project)
+        project = get_object_or_404(self.model, slug=slug)
+        serializer = self.serializer_class(project)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @extend_schema(request=serializers.ProjectSerializer, responses={
-        200: serializers.ProjectSerializer
-    })
-    def put(self, request, project_pk):
+    @extend_schema(request=serializer_class, responses={
+        200: serializer_class})
+    def put(self, request, slug):
         """ Update project information by primary key """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        serializer = serializers.ProjectSerializer(project, data=request.data)
+        project = get_object_or_404(self.model, slug=slug)
+        serializer = self.serializer_class(project, data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
-        return Response(serializers.ProjectSerializer(instance).data,
+        return Response(self.serializer_class(instance).data,
                         status=status.HTTP_200_OK)
 
     @extend_schema(request=EmptySerializer, responses={204: EmptySerializer})
-    def delete(self, request, project_pk):
+    def delete(self, request, slug):
         """ Destroy project object by primary key """
-        project = get_object_or_404(models.Projects, pk=project_pk)
+        project = get_object_or_404(self.model, slug=slug)
         project.delete()
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
 
@@ -81,28 +79,30 @@ class ListCreateProjectFeatureAPIView(APIView):
     """ An APIView for Listing and Creating Project Features """
 
     permission_classes = (IsAdminOrSelfOrReadOnly, )
+    model = models.Projects
+    serializer_classes = {
+        'feature': serializers.FeatureSerializer,
+        'project': serializers.ProjectSerializer
+    }
 
-    @extend_schema(request=serializers.FeatureSerializer, responses={
-        201: serializers.ProjectSerializer
-    })
-    def post(self, request, project_pk):
+    @extend_schema(request=serializer_classes['feature'], responses={
+        201: serializer_classes['project']})
+    def post(self, request, slug):
         """ Create Project Feature """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        serializer = serializers.FeatureSerializer(data=request.data)
+        project = self.model.objects.prefetch_related('features').get(slug=slug)
+        serializer = self.serializer_classes['feature'](data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
         project.features.add(instance)
-        project.features.save()
-        return Response(serializers.ProjectSerializer(instance).data,
+        return Response(self.serializer_classes['project'](project).data,
                         status=status.HTTP_201_CREATED)
 
     @extend_schema(request=EmptySerializer, responses={
-        200: serializers.FeatureSerializer
-    })
-    def get(self, request, project_pk):
+        200: serializer_classes['feature']})
+    def get(self, request, slug):
         """ List project features """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        serializer = serializers.FeatureSerializer(project.features, many=True)
+        project = self.model.objects.prefetch_related('features').get(slug=slug)
+        serializer = self.serializer_classes['feature'](project.features, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -110,27 +110,30 @@ class UpdateDestroyProjectFeatureAPIView(APIView):
     """ An APIView for updating, destroying project feature """
 
     permission_classes = (IsAdminOrSelfOrReadOnly, )
+    model = models.Projects
+    serializer_classes = {
+        'feature': serializers.FeatureSerializer,
+        'project': serializers.ProjectSerializer
+    }
 
-    @extend_schema(request=serializers.FeatureSerializer, responses={
-        200: serializers.ProjectSerializer
-    })
-    def put(self, request, project_pk, feature_pk):
+    @extend_schema(request=serializer_classes['feature'], responses={
+        200: serializer_classes['project']})
+    def put(self, request, slug, feature_pk):
         """ Update project features """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        feature = get_object_or_404(models.Features, pk=feature_pk)
-        serializer = serializers.FeatureSerializer(feature, data=request.data)
+        project = self.model.objects.prefetch_related('features').get(slug=slug)
+        feature = project.features.get(pk=feature_pk)
+        serializer = self.serializer_classes['feature'](feature, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializers.ProjectSerializer(project).data,
+        return Response(self.serializer_classes['project'](project).data,
                         status=status.HTTP_200_OK)
 
     @extend_schema(request=EmptySerializer, responses={204: EmptySerializer})
-    def delete(self, request, project_pk, feature_pk):
+    def delete(self, request, slug, feature_pk):
         """ Destroy project feature """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        feature = get_object_or_404(models.Features, pk=feature_pk)
-        project.features.delete(feature)
-        project.features.save()
+        project = self.model.objects.prefetch_related('features').get(slug=slug)
+        feature = project.features.get(pk=feature_pk)
+        project.features.remove(feature)
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -138,28 +141,30 @@ class ListCreateProjectImageExampleAPIView(APIView):
     """ An APIView for Creating and listing Project Images """
 
     permission_classes = (IsAdminOrSelfOrReadOnly, )
+    model = models.Projects
+    serializer_classes = {
+        'image': serializers.ImageSerializer,
+        'project': serializers.ProjectSerializer,
+    }
 
-    @extend_schema(request=serializers.ImageSerializer, responses={
-        201: serializers.ProjectSerializer
-    })
-    def post(self, request, project_pk):
+    @extend_schema(request=serializer_classes['image'], responses={
+        201: serializer_classes['project']})
+    def post(self, request, slug):
         """ Create project image """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        serializer = serializers.ImageSerializer(data=request.data)
+        project = self.model.objects.prefetch_related('images').get(slug=slug)
+        serializer = self.serializer_classes['image'](data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
         project.images.add(instance)
-        project.images.save()
-        return Response(serializers.ProjectSerializer(project).data,
+        return Response(self.serializer_classes['project'](project).data,
                         status=status.HTTP_201_CREATED)
 
     @extend_schema(request=EmptySerializer, responses={
-        200: serializers.ImageSerializer
-    })
-    def get(self, request, project_pk):
+        200: serializer_classes['image']})
+    def get(self, request, slug):
         """ List project images """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        serializer = serializers.ImageSerializer(project.images, many=True)
+        project = self.model.objects.prefetch_related('images').get(slug=slug)
+        serializer = self.serializer_classes['image'](project.images, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -167,26 +172,91 @@ class UpdateDestroyProjectImageExampleAPIView(APIView):
     """ An APIView for Updating, destroying project image """
 
     permission_classes = (IsAdminOrSelfOrReadOnly, )
+    model = models.Projects
+    serializer_classes = {
+        'image': serializers.ImageSerializer,
+        'project': serializers.ProjectSerializer,
+    }
 
-    @extend_schema(request=serializers.ImageSerializer, responses={
-        200: serializers.ProjectSerializer
-    })
-    def put(self, request, project_pk, image_pk):
+    @extend_schema(request=serializer_classes['image'], responses={
+        200: serializer_classes['project']})
+    def put(self, request, slug, image_pk):
         """ Update project image """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        image = get_object_or_404(models.ImageExamples, pk=image_pk)
-        serializer = serializers.ImageSerializer(instance=image,
-                                                 data=request.data)
+        project = self.model.objects.prefetch_related('images').get(slug=slug)
+        image = project.images.get(pk=image_pk)
+        serializer = self.serializer_classes['image'](instance=image,
+                                                      data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializers.ProjectSerializer(project).data,
+        return Response(self.serializer_classes['project'](project).data,
                         status=status.HTTP_200_OK)
 
     @extend_schema(request=EmptySerializer, responses={204: EmptySerializer})
-    def delete(self, request, project_pk, image_pk):
+    def delete(self, request, slug, image_pk):
         """ Destroy project image """
-        project = get_object_or_404(models.Projects, pk=project_pk)
-        image = get_object_or_404(models.ImageExamples, pk=image_pk)
-        project.images.delete(image)
-        project.images.save()
+        project = self.model.objects.prefetch_related('images').get(slug=slug)
+        image = project.images.get(pk=image_pk)
+        project.images.remove(image)
+        return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
+
+
+class ListCreateCommentAPIView(APIView):
+    """ An APIView for list and creating Comment objects """
+
+    permission_classes = (IsAdminOrSelfOrReadOnly, )
+    model = models.Projects
+    serializer_classes = {
+        'comment': serializers.CommentSerializer,
+        'project': serializers.ProjectSerializer,
+    }
+
+    @extend_schema(request=EmptySerializer, responses={
+        200: serializers.CommentSerializer})
+    def get(self, request, slug):
+        """ Retrieve list of comment objects """
+        project = self.model.objects.prefetch_related('comments').get(slug=slug)
+        serializer = self.serializer_classes['comment'](project.comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(request=serializers.CommentSerializer, responses={
+        201: serializers.CommentSerializer})
+    def post(self, request, slug):
+        """ Create a new object of Comment """
+        project = self.model.objects.prefetch_related('comments').get(slug=slug)
+        serializer = self.serializer_classes['comment'](data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, project=project)
+        return Response(self.serializer_classes['project'](project).data,
+                        status=status.HTTP_201_CREATED)
+
+
+class UpdateDestroyCommentAPIView(APIView):
+    """ An APIView for update and destroy Comments """
+
+    permission_classes = (IsAdminOrSelfOrReadOnly, )
+    model = models.Projects
+    serializer_classes = {
+        'comment': serializers.CommentSerializer,
+        'project': serializers.ProjectSerializer,
+    }
+
+    @extend_schema(request=serializer_classes['comment'], responses={
+        200: serializer_classes['project']})
+    def put(self, request, slug, comment_pk):
+        """ An APIView for update comment """
+        project = self.model.objects.prefetch_related('comments').get(slug=slug)
+        comment = project.comments.get(pk=comment_pk)
+        serializer = self.serializer_classes['comment'](comment, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            self.serializer_classes['project'](project).data,
+            status=status.HTTP_200_OK)
+
+    @extend_schema(request=EmptySerializer, responses={204: EmptySerializer})
+    def delete(self, request, slug, comment_pk):
+        """ An APIView for delete comment """
+        project = self.model.objects.prefetch_related('comments').get(slug=slug)
+        comment = project.comments.get(pk=comment_pk)
+        comment.delete()
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)

@@ -22,7 +22,7 @@ class Features(BaseModel):
         Users can add unlimit
         features to their projects
     """
-    text = models.TextField()
+    title = models.TextField()
 
     def __str__(self):
         return self.text
@@ -53,9 +53,9 @@ class Comments(BaseModel):
     """ Comment system for project model """
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE, related_name="comments")
-    project = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE, related_name="project_comments")
+                             on_delete=models.CASCADE, related_name="all_comments")
+    project = models.ForeignKey(Projects,
+                                on_delete=models.CASCADE, related_name="comments")
     title = models.CharField(max_length=100)
     text = models.TextField(max_length=500)
 
