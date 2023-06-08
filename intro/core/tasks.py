@@ -14,7 +14,7 @@ OTP_CONTENT = """{name} عزیز!
 
 
 @shared_task
-def send_otp_mobile():
+def send_otp_mobile(to_phone, otp_code):
     # TODO: OTP Service code will place here
     return 1
 
@@ -25,7 +25,7 @@ def send_otp_email(to_email, otp_code):
         otp code to given email address
     """
 
-    return send_mail(
+    send_mail(
         subject=f"کد ورود به {settings.SITE_NAME}",
         message="",
         html_message=OTP_CONTENT.format(
@@ -35,3 +35,4 @@ def send_otp_email(to_email, otp_code):
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[to_email]
     )
+    return 1
