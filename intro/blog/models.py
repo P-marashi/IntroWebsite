@@ -6,8 +6,8 @@ from intro.core.models import BaseModel
 
 class Category(BaseModel):
     """ Category model using for post categories """
-    
-    name = models.CharField(max_length=100)
+
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -19,7 +19,7 @@ class BlogPost(BaseModel):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)  # A slug field to create SEO-friendly URLs
     category = models.ForeignKey(Category, on_delete=models.CASCADE)  # Relationship with the Category model
-    image = models.ImageField(upload_to='blog_images/')  # An image field to store blog post images
+    image = models.ImageField(upload_to='blog_images/', null=True)  # An image field to store blog post images
     text = models.TextField()  # The main content of the blog post
 
     def save(self, *args, **kwargs):

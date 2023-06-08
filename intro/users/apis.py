@@ -20,7 +20,6 @@ from . import serializers
 
 from .backends import AUTH
 
-
 # declared needed api paramteres on @extend_schema
 ONE_TIME_LINK_API_PARAMETERS = [
     OpenApiParameter(
@@ -38,13 +37,14 @@ ONE_TIME_LINK_API_PARAMETERS = [
 ]
 
 
+@extend_schema(tags=["Authentications End-point"])
 class Login(APIView):
     """ an APIView for users logging in
         check user login_method and password
         then Generate jwt token
     """
 
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     @extend_schema(request=serializers.LoginSerializer, responses={
         200: serializers.TokenSerializer,
@@ -65,14 +65,14 @@ class Login(APIView):
             'error': 'User not found'
         }).data, status=status.HTTP_404_NOT_FOUND)
 
-
+@extend_schema(tags=["Authentications End-point"])
 class Register(APIView):
     """ An APIView for users registration
         send otp code to email/phone
         generate activation url and return it
     """
 
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     @extend_schema(request=serializers.RegisterSerializer, responses={
         201: serializers.VerifyURLSerializer})
@@ -103,7 +103,7 @@ class Register(APIView):
             {'url': url}
         ).data, status=status.HTTP_201_CREATED)
 
-
+@extend_schema(tags=["Authentications End-point"])
 class VerifyRegsiter(APIView):
     """ An APIView for verify users registration
         gives user otp code and validate it
@@ -111,7 +111,7 @@ class VerifyRegsiter(APIView):
         return User object
     """
 
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     @extend_schema(request=serializers.RegisterVerifySerializer, responses={
         200: serializers.UserSerializer,
@@ -132,14 +132,14 @@ class VerifyRegsiter(APIView):
             'error': 'Url activation token is expired.'
         }).data, status=status.HTTP_403_FORBIDDEN)
 
-
+@extend_schema(tags=["Authentications End-point"])
 class ChangePassword(APIView):
     """ An APIView for changing users passwords
         check users old password
         matching users new password and password confirm
         set users new password
     """
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     @extend_schema(request=serializers.ChangePasswordSerializer, responses={
         200: serializers.UserSerializer})
@@ -154,7 +154,7 @@ class ChangePassword(APIView):
         return Response(data=serializers.UserSerializer(request.user).data,
                         status=status.HTTP_200_OK)
 
-
+@extend_schema(tags=["Authentications End-point"])
 class ResetPassword(APIView):
     """ An APIView for reset users passwords
         gives email/phone number from user
@@ -162,7 +162,7 @@ class ResetPassword(APIView):
         for verification
     """
 
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     @extend_schema(request=serializers.ResetPasswordSerializer, responses={
         200: serializers.VerifyURLSerializer})
@@ -185,14 +185,14 @@ class ResetPassword(APIView):
             {'url': url}
         ).data, status=status.HTTP_200_OK)
 
-
+@extend_schema(tags=["Authentications End-point"])
 class ResetPasswordVerify(APIView):
     """ An APIView for verifying users password reset
         its verifying users otp code and password
         then it will set a new password for user
     """
 
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     @extend_schema(request=serializers.ResetPasswordVerifySerializer, responses={
         200: serializers.UserSerializer,
@@ -214,11 +214,11 @@ class ResetPasswordVerify(APIView):
             'error': 'url activation token has been expired'
         }).data, status=status.HTTP_403_FORBIDDEN)
 
-
+@extend_schema(tags=["Authentications End-point"])
 class Logout(APIView):
     """ An APIView for logging users out """
 
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     @extend_schema(request=serializers.RefreshTokenSerializer, responses={
         205: EmptySerializer, 400: EmptySerializer})

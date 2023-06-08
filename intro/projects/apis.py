@@ -8,16 +8,19 @@ from drf_spectacular.utils import extend_schema
 
 from intro.core.serializers import EmptySerializer
 from intro.core.permissions import IsAdminOrSelfOrReadOnly
+from intro.utils.renderer import UserRenderer
 
 from . import serializers
 from . import models
 
 
+@extend_schema(tags=["Projects End-point"])
 class ListCreateProjectAPIView(APIView):
     """
     an APIView for List and Creating Projects Model
     """
 
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly, )
     model = models.Projects
     serializer_class = serializers.ProjectSerializer
@@ -41,9 +44,11 @@ class ListCreateProjectAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@extend_schema(tags=["Projects End-point"])
 class RetrieveUpdateDestroyProjectAPIView(APIView):
     """ An APIView for retrieving, updating, destroying projects """
 
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly, )
     model = models.Projects
     serializer_class = serializers.ProjectSerializer
@@ -75,9 +80,11 @@ class RetrieveUpdateDestroyProjectAPIView(APIView):
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(tags=["Projects End-point"])
 class ListCreateProjectFeatureAPIView(APIView):
     """ An APIView for Listing and Creating Project Features """
 
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly, )
     model = models.Projects
     serializer_classes = {
@@ -106,9 +113,11 @@ class ListCreateProjectFeatureAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@extend_schema(tags=["Projects End-point"])
 class UpdateDestroyProjectFeatureAPIView(APIView):
     """ An APIView for updating, destroying project feature """
 
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly, )
     model = models.Projects
     serializer_classes = {
@@ -137,9 +146,11 @@ class UpdateDestroyProjectFeatureAPIView(APIView):
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(tags=["Projects End-point"])
 class ListCreateProjectImageExampleAPIView(APIView):
     """ An APIView for Creating and listing Project Images """
 
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly, )
     model = models.Projects
     serializer_classes = {
@@ -168,9 +179,11 @@ class ListCreateProjectImageExampleAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@extend_schema(tags=["Projects End-point"])
 class UpdateDestroyProjectImageExampleAPIView(APIView):
     """ An APIView for Updating, destroying project image """
 
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly, )
     model = models.Projects
     serializer_classes = {
@@ -200,9 +213,11 @@ class UpdateDestroyProjectImageExampleAPIView(APIView):
         return Response(EmptySerializer().data, status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(tags=["Projects End-point"])
 class ListCreateCommentAPIView(APIView):
     """ An APIView for list and creating Comment objects """
 
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly, )
     model = models.Projects
     serializer_classes = {
@@ -230,9 +245,11 @@ class ListCreateCommentAPIView(APIView):
                         status=status.HTTP_201_CREATED)
 
 
+@extend_schema(tags=["Projects End-point"])
 class UpdateDestroyCommentAPIView(APIView):
     """ An APIView for update and destroy Comments """
 
+    renderer_classes = [UserRenderer]
     permission_classes = (IsAdminOrSelfOrReadOnly, )
     model = models.Projects
     serializer_classes = {
