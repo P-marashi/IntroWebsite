@@ -15,10 +15,8 @@ from intro.core.serializers import EmptySerializer
 from intro.core.tokens import one_time_token_generator
 from intro.core.cache import cache_otp
 from intro.core.tasks import send_otp_email, send_otp_mobile
-from intro.core.decorators import user_language
 
 from . import serializers
-
 from .backends import AUTH
 
 # declared needed api paramteres on @extend_schema
@@ -47,7 +45,6 @@ class Login(APIView):
 
     permission_classes = (AllowAny,)
 
-    @user_language
     @extend_schema(request=serializers.LoginSerializer, responses={
         200: serializers.TokenSerializer,
         404: serializers.ErrorSerializer})
@@ -77,7 +74,6 @@ class Register(APIView):
 
     permission_classes = (AllowAny,)
 
-    @user_language
     @extend_schema(request=serializers.RegisterSerializer, responses={
         201: serializers.VerifyURLSerializer})
     def post(self, request):
