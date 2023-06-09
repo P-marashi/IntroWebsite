@@ -11,7 +11,7 @@ from drf_spectacular.utils import extend_schema
 from intro.core.serializers import EmptySerializer
 from intro.utils.renderer import UserRenderer
 
-from .models import BlogPost
+from .models import BlogPost, Category
 from .serializers import BlogPostSerializer, CategorySerializer
 
 
@@ -27,6 +27,25 @@ class CategoryAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=["Blog End-point"])
+class CategoryListAPIView(APIView):
+    """
+    API views for retrieving a list of all Category posts.
+    """
+    renderer_classes = [UserRenderer]
+
+    @extend_schema(request=EmptySerializer, responses={
+        200: CategorySerializer})
+    def get(self, request):
+        """
+        Retrieve a list of all Category posts.
+        """
+
+        category_posts = Category.objects.all()
+        serializer = CategorySerializer(Category, many=True)
+        return Response(serializer.data)
 
 
 @extend_schema(request=EmptySerializer, responses={
@@ -84,7 +103,7 @@ class CategoryDetailAPI(APIView):
 @extend_schema(tags=["Blog End-point"])
 class BlogPostCreateAPIView(APIView):
     """
-    API view for creating a new blog post.
+    API views for creating a new blog post.
     Only accessible by admin users.
     """
 
@@ -108,7 +127,7 @@ class BlogPostCreateAPIView(APIView):
 @extend_schema(tags=["Blog End-point"])
 class BlogPostListAPIView(APIView):
     """
-    API view for retrieving a list of all blog posts.
+    API views for retrieving a list of all blog posts.
     """
     renderer_classes = [UserRenderer]
 
@@ -127,7 +146,7 @@ class BlogPostListAPIView(APIView):
 @extend_schema(tags=["Blog End-point"])
 class BlogPostRetrieveUpdateDestroyAPIView(APIView):
     """
-    API view for retrieving, updating, and deleting an individual blog post.
+    API views for retrieving, updating, and deleting an individual blog post.
     Only accessible by admin users.
     """
 

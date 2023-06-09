@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from intro.core.models import BaseModel
 
@@ -8,12 +9,17 @@ from intro.core.models import BaseModel
 class Chat(BaseModel):
     """ Chat model object """
 
-    support = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE,
-                                null=True, blank=True, related_name="support_chats")
-    text = models.TextField(max_length=500)
-    anonymous_sender = models.CharField(max_length=500)  # This will be user cookie, that we set on user request
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL,  # if user is authenticated, user object will be store
+    support = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("support"),
+                                on_delete=models.CASCADE, null=True,
+                                blank=True, related_name="support_chats")
+    text = models.TextField(_("text"), max_length=500)
+
+    # This will be user cookie, that we set on user request
+    anonymous_sender = models.CharField(_("anonymous user cookie"), max_length=500)
+
+    # if user is authenticated, user object will be store
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               verbose_name=_("sender"),
                                on_delete=models.CASCADE,
                                null=True, blank=True, related_name="chats")
 

@@ -16,24 +16,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.i18n import i18n_patterns
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 
 urlpatterns = [
-    path('', include('django_prometheus.urls')),
-    path('admin/', admin.site.urls),
-    path('__debug__/', include('debug_toolbar.urls')),
-    path('api/v1/', include([
-        path('auth/', include('intro.users.urls')),
-        path('blog/', include('intro.blog.urls')),
-        path('support/', include('intro.support.urls')),
-        path('projects/', include('intro.projects.urls')),
-        path('', include('intro.web.urls')),
-        path('schemas/', include([
-            path('', SpectacularAPIView.as_view(), name='schema'),
-            path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'),
-                 name='swagger-ui'),
+    # *i18n_patterns(
+        path('', include('django_prometheus.urls')),
+        path('admin/', admin.site.urls),
+        path('__debug__/', include('debug_toolbar.urls')),
+        path('api/v1/', include([
+            path('auth/', include('intro.users.urls')),
+            path('blog/', include('intro.blog.urls')),
+            path('support/', include('intro.support.urls')),
+            path('projects/', include('intro.projects.urls')),
+            path('', include('intro.web.urls')),
+            path('schemas/', include([
+                path('', SpectacularAPIView.as_view(), name='schema'),
+                path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'),
+                     name='swagger-ui'),
+            ]))
         ]))
-    ]))
+    # )
 ]
-

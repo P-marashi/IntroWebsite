@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
-
 from django.contrib.auth import models as AuthModels
-from django.core.validators import EmailValidator
 from django.db import models
 from django.db.models import Q
+from django.core.validators import EmailValidator
+from django.utils.translation import gettext_lazy as _
 
 from intro.core.models import BaseModel
 
@@ -76,23 +76,24 @@ class User(BaseModel, AuthModels.AbstractBaseUser, AuthModels.PermissionsMixin):
         that extends of AbstractBaseUser
     """
     REGISTRATION_TYPE = (
-        ('E', 'Email'),
-        ('P', 'Phone'),
+        ('E', _('Email')),
+        ('P', _('Phone')),
     )
-    profile_photo = models.ImageField(upload_to="users/images/",
+    profile_photo = models.ImageField(_("profile photo"), upload_to="users/images/",
                                       null=True, blank=True)
-    first_name = models.CharField(max_length=100, null=True, blank=True)
-    last_name = models.CharField(max_length=100, null=True, blank=True)
-    phone_number = models.CharField(max_length=11,
+    first_name = models.CharField(_("first name"), max_length=100, null=True, blank=True)
+    last_name = models.CharField(_("last name"), max_length=100, null=True, blank=True)
+    phone_number = models.CharField(_("phone number"), max_length=11,
                                     unique=True, null=True, blank=True, db_index=1)
-    email = models.EmailField(validators=[EmailValidator],
+    email = models.EmailField(_("email"), validators=[EmailValidator],
                               unique=True, null=True, blank=True, db_index=1)
-    registration_type = models.CharField(choices=REGISTRATION_TYPE,
+    registration_type = models.CharField(_("registration type"),
+                                         choices=REGISTRATION_TYPE,
                                          max_length=2, default="E")
-    about = models.CharField(max_length=300, null=True, blank=True)
-    is_active = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
+    about = models.CharField(_("about"), max_length=300, null=True, blank=True)
+    is_active = models.BooleanField(_("is active"), default=False)
+    is_superuser = models.BooleanField(_("is superuser"), default=False)
+    is_admin = models.BooleanField(_("is admin"), default=False)
 
     objects = UserManager()
 

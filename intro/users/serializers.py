@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.utils.translation import gettext as _
 
 from rest_framework import serializers
 
@@ -23,7 +24,7 @@ class BaseAuthSerializer(serializers.Serializer):
             is not email and phone number
         """
         if not is_phone_or_email(login_method):
-            raise serializers.ValidationError("Email or Phone number is not correct!")
+            raise serializers.ValidationError(_("Email or Phone number is not correct!"))
         return login_method
 
 
@@ -52,7 +53,7 @@ class RegisterSerializer(BaseAuthSerializer):
             are not match
         """
         if validators.check_user_existence(login_method=validated_data.get('login_method')):
-            raise serializers.ValidationError('User is already exist')
+            raise serializers.ValidationError(_('User is already exist'))
 
         validators.password_match_checker(
             validated_data.get('password'),
@@ -72,7 +73,7 @@ class ResetPasswordSerializer(BaseAuthSerializer):
         if not validators.check_user_existence(
             login_method=validated_data.get('login_method')
         ):
-            raise serializers.ValidationError('User not found')
+            raise serializers.ValidationError(_('User not found'))
         return validated_data
 
 
@@ -96,9 +97,9 @@ class RegisterVerifySerializer(serializers.Serializer):
         cached_otp = get_cached_otp(login_method)
 
         if not cached_otp:
-            raise serializers.ValidationError("Code has been expired")
+            raise serializers.ValidationError(_("Code has been expired"))
         if code != cached_otp:
-            raise serializers.ValidationError("Code is invalid")
+            raise serializers.ValidationError(_("Code is invalid"))
 
         return validated_data
 
@@ -133,9 +134,9 @@ class ResetPasswordVerifySerializer(serializers.Serializer):
         cached_otp = get_cached_otp(login_method)
 
         if not cached_otp:
-            raise serializers.ValidationError("Code has been expired")
+            raise serializers.ValidationError(_("Code has been expired"))
         if code != cached_otp:
-            raise serializers.ValidationError("Code is invalid")
+            raise serializers.ValidationError(_("Code is invalid"))
 
         validators.password_match_checker(
             validated_data.get('password'),
@@ -158,7 +159,7 @@ class ChangePasswordSerializer(serializers.Serializer):
         """
         user = self.context['request'].user
         if not user.check_password(old_password):
-            raise serializers.ValidationError('The old password is wrong!')
+            raise serializers.ValidationError(_('The old password is wrong!'))
         return old_password
 
     def validate_password(self, password):

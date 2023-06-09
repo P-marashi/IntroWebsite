@@ -1,3 +1,5 @@
+from django.utils.translation import gettext as _
+
 from rest_framework import serializers
 from .models import Ticket, Answer
 
@@ -43,4 +45,4 @@ class AnswerSerializer(serializers.ModelSerializer):
             return super().create(validated_data)
         else:
             # Raise a validation error if a non-admin user tries to create an answer
-            raise serializers.ValidationError("Only admin users can create answers.")
+            raise serializers.ValidationError(_("Only admin users can create answers."))

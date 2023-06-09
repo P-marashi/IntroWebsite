@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.utils.translation import gettext as _
 
 from rest_framework import serializers
 
@@ -10,7 +11,7 @@ class OTPCodeValidator:
     Minimum Length is: 5
     Maximum Length is: 5
     """
-    message = "%(code) code should be numeric with 5 length"
+    message = _("%(code) code should be numeric with 5 length")
 
     def __init__(self, message=None):
         self.message = message or self.message
@@ -43,7 +44,7 @@ def password_match_checker(password, password_confirm):
     serializers.ValidationError Exception
     """
     if password != password_confirm:
-        raise serializers.ValidationError("Passwords arent match")
+        raise serializers.ValidationError(_("Passwords arent match"))
     return 1
 
 

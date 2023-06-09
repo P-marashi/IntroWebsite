@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from intro.core.models import BaseModel
 
@@ -11,7 +12,7 @@ class ImageExamples(BaseModel):
         images to their projects
     """
 
-    image = models.ImageField()
+    image = models.ImageField(_("image"), upload_to="project/images")
 
     def __str__(self):
         return self.image
@@ -22,10 +23,10 @@ class Features(BaseModel):
         Users can add unlimit
         features to their projects
     """
-    title = models.TextField()
+    title = models.TextField(_("title"), max_length=100)
 
     def __str__(self):
-        return self.text
+        return self.title
 
 
 class Projects(BaseModel):
@@ -33,15 +34,15 @@ class Projects(BaseModel):
         Users can declare their
         wanted projects by this model
     """
-    title = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=50, unique=True)
-    description = models.TextField(max_length=5000)
-    features = models.ManyToManyField(Features,
+    title = models.CharField(_("title"), max_length=100)
+    slug = models.SlugField(_("slug"), max_length=50, unique=True)
+    description = models.TextField(_("description"), max_length=5000)
+    features = models.ManyToManyField(Features, verbose_name=_("features"),
                                       related_name="projects", blank=True)
-    images = models.ManyToManyField(ImageExamples,
+    images = models.ManyToManyField(ImageExamples, verbose_name=_("images"),
                                     related_name="images", blank=True)
-    url_example = models.URLField()
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+    url_example = models.URLField(_("example url"))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("user"),
                              on_delete=models.SET_NULL, null=True,
                              related_name="projects", blank=True)
 
@@ -52,12 +53,12 @@ class Projects(BaseModel):
 class Comments(BaseModel):
     """ Comment system for project model """
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("user"),
                              on_delete=models.CASCADE, related_name="all_comments")
-    project = models.ForeignKey(Projects,
+    project = models.ForeignKey(Projects, verbose_name=_("project"),
                                 on_delete=models.CASCADE, related_name="comments")
-    title = models.CharField(max_length=100)
-    text = models.TextField(max_length=500)
+    title = models.CharField(_("title"), max_length=100)
+    text = models.TextField(_("text"), max_length=500)
 
     def __str__(self):
         return self.title
