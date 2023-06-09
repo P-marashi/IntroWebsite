@@ -36,7 +36,6 @@ class LoginSerializer(BaseAuthSerializer):
 class RegisterSerializer(BaseAuthSerializer):
     """ Serializer for Register API """
 
-    registration_type = serializers.ChoiceField(choices=['E', 'P'])
     password = serializers.CharField()
     password_confirm = serializers.CharField()
 

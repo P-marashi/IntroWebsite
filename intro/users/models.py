@@ -87,7 +87,8 @@ class User(BaseModel, AuthModels.AbstractBaseUser, AuthModels.PermissionsMixin):
                                     unique=True, null=True, blank=True, db_index=1)
     email = models.EmailField(validators=[EmailValidator],
                               unique=True, null=True, blank=True, db_index=1)
-    registration_type = models.CharField(choices=REGISTRATION_TYPE, max_length=2)
+    registration_type = models.CharField(choices=REGISTRATION_TYPE,
+                                         max_length=2, default="E")
     about = models.CharField(max_length=300, null=True, blank=True)
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
