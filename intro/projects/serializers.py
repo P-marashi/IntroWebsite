@@ -26,6 +26,7 @@ class FeatureSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     """ Serializing the projects """
+
     class Meta:
         model = models.Projects
         fields = [
@@ -33,8 +34,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "title",
             "slug",
             "description",
-            "features",
-            "images",
             "url_example",
             "user",
             "updated_at",
