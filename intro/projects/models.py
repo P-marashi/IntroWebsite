@@ -41,7 +41,7 @@ class Projects(BaseModel):
                                       related_name="projects", blank=True)
     images = models.ManyToManyField(ImageExamples, verbose_name=_("images"),
                                     related_name="images", blank=True)
-    url_example = models.URLField(_("example url"))
+    url_example = models.URLField(_("example url"), null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("user"),
                              on_delete=models.SET_NULL, null=True,
                              related_name="projects", blank=True)
