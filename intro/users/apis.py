@@ -82,20 +82,19 @@ class Register(APIView):
         serializer.is_valid(raise_exception=True)
         login_method = serializer.validated_data.get('login_method')
         password = serializer.validated_data.get('password')
-        registration_type = serializer.validated_data.get('registration_type')
         phone_or_email = is_phone_or_email(login_method)
         otp = otp_generator()
         cache_otp(login_method, otp)
         if phone_or_email == "email":
             user = get_user_model().objects.create_user(
                 email=login_method, password=password,
-                registration_type=registration_type
+                registration_type="E"
             )
             send_otp_email.delay(login_method, otp)
         elif phone_or_email == "phone":
             user = get_user_model().objects.create_user(
                 phone_number=login_method, password=password,
-                registration_type=registration_type
+                registration_type="P"
             )
             send_otp_mobile.delay(login_method, otp)
         url = one_time_token_generator.create_url_activation(user)
