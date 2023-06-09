@@ -3,21 +3,19 @@ from rest_framework.test import APIClient
 
 
 @pytest.mark.django_db
-def test_post_projects():
+def test_post_features():
     """
-    Test case for creating a project.
+    Test case for creating a new feature.
     """
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION='Bearer your_access_token')
 
     payload = {
         "title": "my Web",
-        "slug": "test",
-        "description": "this is for test",
-        "url_example": "www.test.com",
+        "pk": 0,
     }
 
-    response = client.post('/api/v1/projects/', payload, format='json')
+    response = client.post('/api/v1/projects/test/features/', payload, format='json')
 
     # Assertions based on the response status code
     if response.status_code == 201:
@@ -28,14 +26,14 @@ def test_post_projects():
 
 
 @pytest.mark.django_db
-def test_get_projects():
+def test_get_features():
     """
-    Test case for retrieving projects.
+    Test case for retrieving all features.
     """
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION='Bearer your_access_token')
 
-    response = client.get('/api/v1/projects/', format='json')
+    response = client.get('/api/v1/projects/test/features/', format='json')
 
     # Assertions based on the response status code
     if response.status_code == 200:
@@ -45,18 +43,18 @@ def test_get_projects():
         assert response.data["message"] == "Authentication credentials were not provided."
     elif response.status_code == 404:
         assert response.data["status"] == "error"
-        assert response.data["message"] == "projects not Found."
+        assert response.data["message"] == "features not Found."
 
 
 @pytest.mark.django_db
-def test_get_projects_slug():
+def test_get_features_slug():
     """
-    Test case for retrieving a project by slug.
+    Test case for retrieving a specific feature.
     """
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION='Bearer your_access_token')
 
-    response = client.get('/api/v1/projects/1/', format='json')
+    response = client.get('/api/v1/projects/test/features/1/', format='json')
 
     # Assertions based on the response status code
     if response.status_code == 200:
@@ -66,25 +64,22 @@ def test_get_projects_slug():
         assert response.data["message"] == "Authentication credentials were not provided."
     elif response.status_code == 404:
         assert response.data["status"] == "error"
-        assert response.data["message"] == "projects not Found."
+        assert response.data["message"] == "features not Found."
 
 
 @pytest.mark.django_db
-def test_put_projects():
+def test_put_features():
     """
-    Test case for updating a project.
+    Test case for updating a feature.
     """
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION='Bearer your_access_token')
 
     payload = {
         "title": "my Web test put",
-        "slug": "test",
-        "description": "this is for test put",
-        "url_example": "www.test-put.com",
+        "pk": 0,
     }
-
-    response = client.put('/api/v1/projects/1/', payload, format='json')
+    response = client.put('/api/v1/projects/test/features/1/', payload, format='json')
 
     # Assertions based on the response status code
     if response.status_code == 201:
@@ -94,18 +89,18 @@ def test_put_projects():
         assert response.data["message"] == "Authentication credentials were not provided."
     elif response.status_code == 404:
         assert response.data["status"] == "error"
-        assert response.data["message"] == "projects not Found."
+        assert response.data["message"] == "features not Found."
 
 
 @pytest.mark.django_db
-def test_delete_projects():
+def test_delete_features():
     """
-    Test case for deleting a project.
+    Test case for deleting a feature.
     """
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION='Bearer your_access_token')
 
-    response = client.delete('/api/v1/projects/1/', format='json')
+    response = client.delete('/api/v1/projects/test/features/1/', format='json')
 
     # Assertions based on the response status code
     if response.status_code == 200:
@@ -115,4 +110,4 @@ def test_delete_projects():
         assert response.data["message"] == "Authentication credentials were not provided."
     elif response.status_code == 404:
         assert response.data["status"] == "error"
-        assert response.data["message"] == "projects not Found."
+        assert response.data["message"] == "features not Found."
