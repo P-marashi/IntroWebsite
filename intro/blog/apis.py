@@ -1,4 +1,6 @@
 from django.http import Http404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from rest_framework.views import APIView
 from rest_framework import status
@@ -36,6 +38,7 @@ class CategoryListAPIView(APIView):
     """
     renderer_classes = [UserRenderer]
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={
         200: CategorySerializer})
     def get(self, request):
@@ -64,6 +67,7 @@ class CategoryDetailAPI(APIView):
         except BlogPost.DoesNotExist:
             raise NotFound
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={
         200: BlogPostSerializer})
     def get(self, request, slug):
@@ -131,6 +135,7 @@ class BlogPostListAPIView(APIView):
     """
     renderer_classes = [UserRenderer]
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={
         200: BlogPostSerializer})
     def get(self, request):

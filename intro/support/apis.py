@@ -1,4 +1,7 @@
 from django.http import Http404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -20,6 +23,8 @@ class TicketListCreateAPIView(APIView):
     renderer_classes = [UserRenderer]
     permission_classes = [IsAuthenticated, IsAdminUser]
 
+    @method_decorator(cache_page(60*60*3))
+    @vary_on_headers("Authorization",)
     @extend_schema(request=EmptySerializer, responses={200: TicketSerializer})
     def get(self, request):
         """
@@ -69,6 +74,8 @@ class TicketDetailAPIView(APIView):
         except Ticket.DoesNotExist:
             raise Http404
 
+    @method_decorator(cache_page(60*60*3))
+    @vary_on_headers("Authorization",)
     @extend_schema(request=EmptySerializer, responses={200: TicketSerializer})
     def get(self, request, pk):
         """
@@ -115,6 +122,7 @@ class AnswerListCreateAPIView(APIView):
     renderer_classes = [UserRenderer]
     permission_classes = [IsAdminUser]
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={200: AnswerSerializer})
     def get(self, request):
         """
@@ -154,6 +162,7 @@ class AnswerDetailAPIView(APIView):
         except Answer.DoesNotExist:
             raise Http404
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={200: AnswerSerializer})
     def get(self, request, pk):
         """

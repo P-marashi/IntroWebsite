@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -26,6 +29,7 @@ class IndexAPIView(APIView):
     renderer_classes = [UserRenderer]
     permission_classes = (AllowAny,)
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={200: StatsSerializer})
     def get(self, request):
         """ Accept get request for retrieving
@@ -83,6 +87,8 @@ class DashboardAPIView(APIView):
             }
         return StatsSerializer(stats)
 
+    @method_decorator(cache_page(60*60*3))
+    @method_decorator(vary_on_headers("Authorization",))
     @extend_schema(request=EmptySerializer, responses={200: StatsSerializer})
     def get(self, request):
         serializer = self.get_serializer()

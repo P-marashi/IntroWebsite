@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -35,6 +37,7 @@ class ListCreateProjectAPIView(APIView):
         return Response(self.serializer_class(instance).data,
                         status=status.HTTP_201_CREATED)
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={
         200: serializer_class})
     def get(self, request):
@@ -53,6 +56,7 @@ class RetrieveUpdateDestroyProjectAPIView(APIView):
     model = models.Projects
     serializer_class = serializers.ProjectSerializer
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=serializer_class, responses={
         200: serializer_class})
     def get(self, request, slug):
@@ -104,6 +108,7 @@ class ListCreateProjectFeatureAPIView(APIView):
         return Response(self.serializer_classes['project'](project).data,
                         status=status.HTTP_201_CREATED)
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={
         200: serializer_classes['feature']})
     def get(self, request, slug):
@@ -170,6 +175,7 @@ class ListCreateProjectImageExampleAPIView(APIView):
         return Response(self.serializer_classes['project'](project).data,
                         status=status.HTTP_201_CREATED)
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={
         200: serializer_classes['image']})
     def get(self, request, slug):
@@ -225,6 +231,7 @@ class ListCreateCommentAPIView(APIView):
         'project': serializers.ProjectSerializer,
     }
 
+    @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={
         200: serializers.CommentSerializer})
     def get(self, request, slug):
