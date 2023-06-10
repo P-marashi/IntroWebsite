@@ -36,6 +36,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "description",
             "url_example",
             "user",
+            "amount",
             "updated_at",
             "created_at",
         ]

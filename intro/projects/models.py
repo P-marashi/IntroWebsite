@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from intro.core.models import BaseModel
+from intro.payment.models import Transaction
 
 
 # Create your models here.
@@ -23,6 +24,7 @@ class Features(BaseModel):
         Users can add unlimit
         features to their projects
     """
+
     title = models.TextField(_("title"), max_length=100)
 
     def __str__(self):
@@ -45,6 +47,9 @@ class Projects(BaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("user"),
                              on_delete=models.SET_NULL, null=True,
                              related_name="projects", blank=True)
+    amount = models.IntegerField(_("amount"), null=True, blank=True)
+    transaction = models.ManyToManyField(Transaction, blank=True,
+                                         verbose_name=_("transaction"))
 
     def __str__(self):
         return self.title
