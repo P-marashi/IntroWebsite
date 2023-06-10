@@ -31,10 +31,7 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 # Django Debug Toolbar configurations
 if DEBUG:
-    import socket  # only if you haven't already imported this
-    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    ALLOWED_HOSTS = \
-        [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "172.19.0.6"]
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "172.19.0.7"]
     INTERNAL_IPS = ALLOWED_HOSTS
 
 
@@ -48,6 +45,7 @@ LOCAL_APPS = [
     "intro.users.apps.UsersConfig",
     "intro.utils.apps.UtilsConfig",
     "intro.web.apps.WebConfig",
+    "intro.payment.apps.PaymentConfig"
 ]
 
 # Third-Party Application definition

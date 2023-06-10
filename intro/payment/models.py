@@ -2,11 +2,13 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from django_prometheus.models import ExportModelOperationsMixin
+
 from intro.core.models import BaseModel
 
 
 # Create your models here.
-class Transaction(BaseModel):
+class Transaction(ExportModelOperationsMixin('Transaction'), BaseModel):
     TRANSACTION_STATUS = (
         ("S", _("Success")),
         ("F", _("Failed")),
@@ -20,7 +22,11 @@ class Transaction(BaseModel):
                              on_delete=models.CASCADE, related_name="transactions")
     authority = models.TextField(_("authority"), max_length=500, null=True, blank=True)
     refID = models.TextField(_("refrence id"), max_length=500, null=True, blank=True)
-    status = models.CharField(choices=TRANSACTION_STATUS, default="N")
+    status = models.CharField(_("status"), max_length=2, choices=TRANSACTION_STATUS, default="N")
+
+    class Meta:
+        verbose_name = _("Transaction")
+        verbose_name_plural = _("Transactions")
 
     def __str__(self):
         return self.title

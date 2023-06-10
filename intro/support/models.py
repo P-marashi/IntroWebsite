@@ -3,11 +3,13 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+from django_prometheus.models import ExportModelOperationsMixin
+
 from intro.users.models import User
 from intro.core.models import BaseModel
 
 
-class Ticket(BaseModel):
+class Ticket(ExportModelOperationsMixin('Ticket'), BaseModel):
     parent = models.ForeignKey('self', verbose_name=_("parent"), related_name="replieds",
                                on_delete=models.CASCADE, blank=True,
                                default=True, null=True)
@@ -16,6 +18,10 @@ class Ticket(BaseModel):
     file = models.FileField(_("file"), blank=True)
     image = models.ImageField(_("image"), blank=True)
     description = models.TextField(_("descriprion"))
+
+    class Meta:
+        verbose_name = _("Ticket")
+        verbose_name_plural = _("Tickets")
 
     def __str__(self):
         return f"{self.title} - {self.user}"
@@ -27,7 +33,7 @@ def set_ticket_user(sender, instance, **kwargs):
         instance.user = instance.created_by  # Set the user field to the created_by field
 
 
-class Answer(BaseModel):
+class Answer(ExportModelOperationsMixin('Answer'), BaseModel):
     STATUS_CHOICES = [
         ('O', 'Open'),
         ('I', 'In Progress'),
@@ -38,6 +44,10 @@ class Answer(BaseModel):
     response = models.TextField(_("response"))
     status = models.CharField(_("status"), choices=STATUS_CHOICES,
                               max_length=155, default="O")
+
+    class Meta:
+        verbose_name = _("Answer")
+        verbose_name_plural = _("Answers")
 
     def __str__(self):
         return f"{self.ticket} - {self.admin}"

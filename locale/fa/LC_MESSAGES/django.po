@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-09 15:21+0000\n"
+"POT-Creation-Date: 2023-06-10 19:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,52 +17,81 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: config/settings.py:148
+
+#: config/settings.py:152
 msgid "Iran"
 msgstr "ایران"
 
-#: config/settings.py:149
+#: config/settings.py:153
 msgid "English"
 msgstr "انگلیسی"
 
-#: intro/blog/models.py:11
+#: intro/blog/models.py:13
 msgid "name"
 msgstr "نام"
 
-#: intro/blog/models.py:20 intro/projects/models.py:26
-#: intro/projects/models.py:37 intro/projects/models.py:60
-#: intro/support/models.py:15
+#: intro/blog/models.py:16
+#, fuzzy
+#| msgid "category"
+msgid "Category"
+msgstr "دسته بندی"
+
+#: intro/blog/models.py:17
+#, fuzzy
+#| msgid "category"
+msgid "Categories"
+msgstr "دسته بندی"
+
+#: intro/blog/models.py:26 intro/projects/models.py:34
+#: intro/projects/models.py:50 intro/projects/models.py:80
+#: intro/support/models.py:17
 msgid "title"
 msgstr "عنوان"
 
-#: intro/blog/models.py:21 intro/projects/models.py:38
+#: intro/blog/models.py:27 intro/projects/models.py:51
 msgid "slug"
 msgstr "اسلاگ"
 
-#: intro/blog/models.py:23
+#: intro/blog/models.py:29
 msgid "category"
 msgstr "دسته بندی"
 
-#: intro/blog/models.py:24 intro/projects/models.py:15
-#: intro/support/models.py:17
+#: intro/blog/models.py:30 intro/projects/models.py:18
+#: intro/support/models.py:19
 msgid "image"
 msgstr "تصویر"
 
-#: intro/blog/models.py:25 intro/chat/models.py:15 intro/projects/models.py:61
+#: intro/blog/models.py:31 intro/chat/models.py:17 intro/projects/models.py:81
 msgid "text"
 msgstr "متن"
 
-#: intro/chat/models.py:12
+#: intro/blog/models.py:34
+msgid "Post"
+msgstr "مقاله"
+
+#: intro/blog/models.py:35
+msgid "Posts"
+msgstr "مقاله ها"
+
+#: intro/chat/models.py:14
 msgid "support"
 msgstr "پشتیبان"
 
-#: intro/chat/models.py:18
+#: intro/chat/models.py:20
 msgid "anonymous user cookie"
 msgstr "کاربر ناشناس (کوکی)"
 
-#: intro/chat/models.py:22
+#: intro/chat/models.py:24
 msgid "sender"
 msgstr "ارسال کننده"
+
+#: intro/chat/models.py:29
+msgid "Chat"
+msgstr "پیام"
+
+#: intro/chat/models.py:30
+msgid "Chats"
+msgstr "پیام ها"
 
 #: intro/core/models.py:15
 msgid "created at"
@@ -72,110 +101,228 @@ msgstr "ساخته شده در"
 msgid "updated at"
 msgstr "ویرایش شده در "
 
-#: intro/projects/models.py:39
+#: intro/payment/models.py:13
+msgid "Success"
+msgstr "موفقیت"
+
+#: intro/payment/models.py:14
+msgid "Failed"
+msgstr "شکست"
+
+#: intro/payment/models.py:15
+msgid "Pending"
+msgstr "در انتظار"
+
+#: intro/payment/models.py:16
+msgid "Not Paid"
+msgstr "پرداخت نشده"
+
+#: intro/payment/models.py:18
+#, fuzzy
+#| msgid "title"
+msgid "Title"
+msgstr "عنوان"
+
+#: intro/payment/models.py:19 intro/projects/models.py:61
+msgid "amount"
+msgstr "مبلغ"
+
+#: intro/payment/models.py:20 intro/projects/models.py:52
 msgid "description"
 msgstr "توضیحات"
 
-#: intro/projects/models.py:40
-msgid "features"
-msgstr "ویژگی ها"
-
-#: intro/projects/models.py:42
-msgid "images"
-msgstr "تصاویر"
-
-#: intro/projects/models.py:44
-msgid "example url"
-msgstr "آدرس نمونه"
-
-#: intro/projects/models.py:45 intro/projects/models.py:56
-#: intro/support/models.py:14
+#: intro/payment/models.py:21 intro/projects/models.py:58
+#: intro/projects/models.py:76 intro/support/models.py:16
 msgid "user"
 msgstr "کاربر"
 
-#: intro/projects/models.py:58
+#: intro/payment/models.py:23
+msgid "authority"
+msgstr "توکن زرین پال"
+
+#: intro/payment/models.py:24
+msgid "refrence id"
+msgstr "شماره مرجع"
+
+#: intro/payment/models.py:25 intro/support/models.py:45
+msgid "status"
+msgstr "وضعیت"
+
+#: intro/payment/models.py:28
+msgid "Transaction"
+msgstr "تراکنش"
+
+#: intro/payment/models.py:29
+msgid "Transactions"
+msgstr "تراکنش ها"
+
+#: intro/projects/models.py:21
+#, fuzzy
+#| msgid "image"
+msgid "Image"
+msgstr "تصویر"
+
+#: intro/projects/models.py:22
+#, fuzzy
+#| msgid "images"
+msgid "Images"
+msgstr "تصاویر"
+
+#: intro/projects/models.py:37
+#, fuzzy
+#| msgid "features"
+msgid "Feature"
+msgstr "ویژگی ها"
+
+#: intro/projects/models.py:38
+#, fuzzy
+#| msgid "features"
+msgid "Features"
+msgstr "ویژگی ها"
+
+#: intro/projects/models.py:53
+msgid "features"
+msgstr "ویژگی ها"
+
+#: intro/projects/models.py:55
+msgid "images"
+msgstr "تصاویر"
+
+#: intro/projects/models.py:57
+msgid "example url"
+msgstr "آدرس نمونه"
+
+#: intro/projects/models.py:63
+msgid "transaction"
+msgstr "تراکنش"
+
+#: intro/projects/models.py:66
+#, fuzzy
+#| msgid "project"
+msgid "Project"
+msgstr "پروژه"
+
+#: intro/projects/models.py:67
+#, fuzzy
+#| msgid "project"
+msgid "Projects"
+msgstr "پروژه"
+
+#: intro/projects/models.py:78
 msgid "project"
 msgstr "پروژه"
 
-#: intro/support/models.py:11
+#: intro/projects/models.py:84
+msgid "Comment"
+msgstr "نظر"
+
+#: intro/projects/models.py:85
+msgid "Comments"
+msgstr "نظرات"
+
+#: intro/support/models.py:13
 msgid "parent"
 msgstr "دسته بالاتر"
 
-#: intro/support/models.py:16
+#: intro/support/models.py:18
 msgid "file"
 msgstr "فایل"
 
-#: intro/support/models.py:18
+#: intro/support/models.py:20
 msgid "descriprion"
 msgstr "توضیحات"
 
-#: intro/support/models.py:36
+#: intro/support/models.py:23
+#, fuzzy
+#| msgid "ticket"
+msgid "Ticket"
+msgstr "تیکت"
+
+#: intro/support/models.py:24
+#, fuzzy
+#| msgid "ticket"
+msgid "Tickets"
+msgstr "تیکت"
+
+#: intro/support/models.py:42
 msgid "ticket"
 msgstr "تیکت"
 
-#: intro/support/models.py:37
+#: intro/support/models.py:43
 msgid "admin"
 msgstr "ادمین"
 
-#: intro/support/models.py:38
+#: intro/support/models.py:44
 msgid "response"
 msgstr "پاسخ"
 
-#: intro/support/models.py:39
-msgid "status"
-msgstr "وضعیت"
+#: intro/support/models.py:49
+msgid "Answer"
+msgstr "پاسخ"
+
+#: intro/support/models.py:50
+msgid "Answers"
+msgstr "پاسخ ها"
 
 #: intro/support/serializers.py:48
 msgid "Only admin users can create answers."
 msgstr "فقط ادمین ها میتوانند پاسخ بدهند"
 
-#: intro/users/models.py:79
+#: intro/users/models.py:82
 msgid "Email"
 msgstr "آدرس ایمیل"
 
-#: intro/users/models.py:80
+#: intro/users/models.py:83
 msgid "Phone"
 msgstr "شماره تلفن"
 
-#: intro/users/models.py:82
+#: intro/users/models.py:85
 msgid "profile photo"
 msgstr "تصویر پروفایل"
 
-#: intro/users/models.py:84
+#: intro/users/models.py:87
 msgid "first name"
 msgstr "نام"
 
-#: intro/users/models.py:85
+#: intro/users/models.py:88
 msgid "last name"
 msgstr "نام خانوادگی"
 
-#: intro/users/models.py:86
+#: intro/users/models.py:89
 msgid "phone number"
 msgstr "شماره تلفن"
 
-#: intro/users/models.py:88
+#: intro/users/models.py:91
 msgid "email"
 msgstr "آدرس ایمیل"
 
-#: intro/users/models.py:90
+#: intro/users/models.py:93
 msgid "registration type"
 msgstr "نوع ثبت نام"
 
-#: intro/users/models.py:93
+#: intro/users/models.py:96
 msgid "about"
 msgstr "درباره"
 
-#: intro/users/models.py:94
+#: intro/users/models.py:97
 msgid "is active"
 msgstr "وضعیت فعال بودن"
 
-#: intro/users/models.py:95
+#: intro/users/models.py:98
 msgid "is superuser"
 msgstr " وضعیت سوپریوزر بودن"
 
-#: intro/users/models.py:96
+#: intro/users/models.py:99
 msgid "is admin"
 msgstr "وضعیت ادمین بودن"
+
+#: intro/users/models.py:106
+msgid "User"
+msgstr "کاربر"
+
+#: intro/users/models.py:107
+msgid "Users"
+msgstr "کاربر ها"
 
 #: intro/users/serializers.py:27
 msgid "Email or Phone number is not correct!"

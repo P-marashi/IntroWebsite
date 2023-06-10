@@ -5,6 +5,8 @@ from django.db.models import Q
 from django.core.validators import EmailValidator
 from django.utils.translation import gettext_lazy as _
 
+from django_prometheus.models import ExportModelOperationsMixin
+
 from intro.core.models import BaseModel
 
 
@@ -71,7 +73,8 @@ class UserManager(AuthModels.BaseUserManager):
 
 
 # Create your models here.
-class User(BaseModel, AuthModels.AbstractBaseUser, AuthModels.PermissionsMixin):
+class User(ExportModelOperationsMixin('User'), BaseModel,
+           AuthModels.AbstractBaseUser, AuthModels.PermissionsMixin):
     """ Custom Django User Model
         that extends of AbstractBaseUser
     """
@@ -98,6 +101,10 @@ class User(BaseModel, AuthModels.AbstractBaseUser, AuthModels.PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
+
+    class Meta:
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
 
     def __str__(self):
         return self.email or self.phone_number
