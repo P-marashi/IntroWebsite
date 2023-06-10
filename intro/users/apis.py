@@ -11,13 +11,14 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from intro.utils.regexes import is_phone_or_email
 from intro.utils.otp import otp_generator
 
-from intro.core.serializers import EmptySerializer
+from intro.core.serializers import EmptySerializer, ErrorSerializer, VerifyURLSerializer
 from intro.core.tokens import one_time_token_generator
 from intro.core.cache import cache_otp
 from intro.core.tasks import send_otp_email, send_otp_mobile
 
 from . import serializers
 from .backends import AUTH
+
 
 # declared needed api paramteres on @extend_schema
 ONE_TIME_LINK_API_PARAMETERS = [
@@ -47,7 +48,7 @@ class Login(APIView):
 
     @extend_schema(request=serializers.LoginSerializer, responses={
         200: serializers.TokenSerializer,
-        404: serializers.ErrorSerializer})
+        404: ErrorSerializer})
     def post(self, request):
         """ Accept post request for logging in """
         serializer = serializers.LoginSerializer(data=request.data)
@@ -60,7 +61,7 @@ class Login(APIView):
             tokens = AUTH.generate_token(user)
             return Response(data=serializers.TokenSerializer(tokens).data,
                             status=status.HTTP_200_OK)
-        return Response(data=serializers.ErrorSerializer({
+        return Response(data=ErrorSerializer({
             'error': 'User not found'
         }).data, status=status.HTTP_404_NOT_FOUND)
 
@@ -75,7 +76,7 @@ class Register(APIView):
     permission_classes = (AllowAny,)
 
     @extend_schema(request=serializers.RegisterSerializer, responses={
-        201: serializers.VerifyURLSerializer})
+        201: VerifyURLSerializer})
     def post(self, request):
         """ Accept post request for registering users """
         serializer = serializers.RegisterSerializer(data=request.data)
@@ -98,9 +99,10 @@ class Register(APIView):
             )
             send_otp_mobile.delay(login_method, otp)
         url = one_time_token_generator.create_url_activation(user)
-        return Response(data=serializers.VerifyURLSerializer(
+        return Response(data=VerifyURLSerializer(
             {'url': url}
         ).data, status=status.HTTP_201_CREATED)
+
 
 @extend_schema(tags=["Authentications End-point"])
 class VerifyRegsiter(APIView):
@@ -114,7 +116,7 @@ class VerifyRegsiter(APIView):
 
     @extend_schema(request=serializers.RegisterVerifySerializer, responses={
         200: serializers.UserSerializer,
-        403: serializers.ErrorSerializer
+        403: ErrorSerializer
     }, parameters=ONE_TIME_LINK_API_PARAMETERS)
     def post(self, request, uidb64, token):
         """ Accept post request for verifying users registration """
@@ -127,9 +129,10 @@ class VerifyRegsiter(APIView):
             user.save()
             return Response(data=serializers.UserSerializer(user).data,
                             status=status.HTTP_200_OK)
-        return Response(data=serializers.ErrorSerializer({
+        return Response(data=ErrorSerializer({
             'error': 'Url activation token is expired.'
         }).data, status=status.HTTP_403_FORBIDDEN)
+
 
 @extend_schema(tags=["Authentications End-point"])
 class ChangePassword(APIView):
@@ -153,6 +156,7 @@ class ChangePassword(APIView):
         return Response(data=serializers.UserSerializer(request.user).data,
                         status=status.HTTP_200_OK)
 
+
 @extend_schema(tags=["Authentications End-point"])
 class ResetPassword(APIView):
     """ An APIView for reset users passwords
@@ -164,7 +168,7 @@ class ResetPassword(APIView):
     permission_classes = (AllowAny,)
 
     @extend_schema(request=serializers.ResetPasswordSerializer, responses={
-        200: serializers.VerifyURLSerializer})
+        200: VerifyURLSerializer})
     def post(self, request):
         """ Accept post request for reset users password """
         serializer = serializers.ResetPasswordSerializer(data=request.data)
@@ -180,9 +184,10 @@ class ResetPassword(APIView):
         elif phone_or_email == "phone":
             send_otp_mobile.delay(login_method, otp)
         url = one_time_token_generator.create_url_activation(user)
-        return Response(serializers.VerifyURLSerializer(
+        return Response(VerifyURLSerializer(
             {'url': url}
         ).data, status=status.HTTP_200_OK)
+
 
 @extend_schema(tags=["Authentications End-point"])
 class ResetPasswordVerify(APIView):
@@ -209,9 +214,10 @@ class ResetPasswordVerify(APIView):
             user.save()
             return Response(data=serializers.UserSerializer(user).data,
                             status=status.HTTP_200_OK)
-        return Response(serializers.ErrorSerializer({
+        return Response(ErrorSerializer({
             'error': 'url activation token has been expired'
         }).data, status=status.HTTP_403_FORBIDDEN)
+
 
 @extend_schema(tags=["Authentications End-point"])
 class Logout(APIView):
@@ -231,7 +237,7 @@ class Logout(APIView):
         try:
             AUTH.set_blacklist_token(refresh_token)
         except Exception:
-            return Response(serializers.ErrorSerializer(
+            return Response(ErrorSerializer(
                 {'error': 'token is already blacklisted'}
             ).data, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_205_RESET_CONTENT)

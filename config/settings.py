@@ -38,7 +38,7 @@ if DEBUG:
     INTERNAL_IPS = ALLOWED_HOSTS
 
 
-# Application definition
+# Local Application definition
 LOCAL_APPS = [
     "intro.blog.apps.BlogConfig",
     "intro.chat.apps.ChatConfig",
@@ -50,6 +50,7 @@ LOCAL_APPS = [
     "intro.web.apps.WebConfig",
 ]
 
+# Third-Party Application definition
 THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
@@ -60,6 +61,7 @@ THIRD_PARTY_APPS = [
     'django_prometheus',
 ]
 
+# Django Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -144,12 +146,13 @@ SITE_NAME = env("SITE_NAME")
 
 LANGUAGE_CODE = 'fa-ir'
 
+# Declaring supported languages
 LANGUAGES = [
     ('fa', gettext_lazy('Iran')),
     ('en', gettext_lazy('English')),
 ]
 
-
+# Declaring static strings path
 LOCALE_PATHS = [
     BASE_DIR / 'locale/',
 ]
@@ -203,3 +206,22 @@ EMAIL_PORT = env("EMAIL_PORT")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+
+# Zarinpal Payment Gateway configurations
+ZARINPAL = {
+    'default': {
+        'ZARINPAL_REQUEST_URL': '',
+        'ZARINPAL_AUTHORITY_URL': '',
+        'ZARINPAL_VERIFY_URL': '',
+        'MERCHANT_ID': '',  # 16 length hex merchant should place here
+        'CALLBACK_URL': 'http://127.0.0.1:8000/api/v1/payment/callback/',  # callback url
+    },
+    'sandbox': {
+        'ZARINPAL_REQUEST_URL': '',
+        'ZARINPAL_AUTHORITY_URL': '',
+        'ZARINPAL_VERIFY_URL': '',
+        'MERCHANT_ID': '',  # 16 length hex merchant should place here
+        'CALLBACK_URL': 'http://127.0.0.1:8000/api/v1/payment/callback/',  # callback url
+    }
+}

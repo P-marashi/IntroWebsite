@@ -198,18 +198,6 @@ class RefreshTokenSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
 
-class VerifyURLSerializer(serializers.Serializer):
-    """ Serializer for response Url to user """
-
-    url = serializers.URLField()
-
-
-class ErrorSerializer(serializers.Serializer):
-    """ Serializer for response error to user """
-
-    error = serializers.CharField()
-
-
 class UserSerializer(serializers.ModelSerializer):
     """ User serializer for response
         or do any operation to user

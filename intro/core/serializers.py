@@ -7,3 +7,15 @@ class EmptySerializer(serializers.Serializer):
     """
 
     ...
+
+
+class VerifyURLSerializer(serializers.Serializer):
+    """ Serializer for response Url to user """
+
+    url = serializers.URLField()
+
+
+class ErrorSerializer(serializers.Serializer):
+    """ Serializer for response error to user """
+
+    error = serializers.CharField()
