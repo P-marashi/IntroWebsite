@@ -81,3 +81,14 @@ class TicketDetailView(APIView):
             else:
                 return Response({'message': 'You can only edit your own ticket.'}, status=status.HTTP_403_FORBIDDEN)
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk):
+        ticket = self.get_ticket(pk)
+        if ticket:
+            if request.user.is_admin:  # Only allow admins to delete tickets
+                ticket.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({'message': 'You do not have permission to delete this ticket.'},
+                                status=status.HTTP_403_FORBIDDEN)
+        return Response(status=status.HTTP_404_NOT_FOUND)
