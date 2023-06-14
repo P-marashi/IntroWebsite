@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Ticket, Answer
+from .models import Ticket
 
 
 @admin.register(Ticket)
@@ -16,15 +16,4 @@ class TicketAdmin(admin.ModelAdmin):
     search_fields = ('title', 'user__username')
 
 
-@admin.register(Answer)
-class AnswerAdmin(admin.ModelAdmin):
-    """ Answer model on admin interface """
 
-    # Displayed fields in the list view of the admin interface
-    list_display = ('ticket', 'admin', 'status', 'created_at')
-
-    # Filter options for the list view
-    list_filter = ('status', 'created_at')
-
-    # Fields to enable searching in the admin interface
-    search_fields = ('ticket__title', 'admin__username')
