@@ -22,6 +22,11 @@ class TicketListCreateView(APIView):
 
     @extend_schema(request=TicketSerializer, responses={200: TicketSerializer})
     def get(self, request):
+        """
+        Retrieve a list of tickets based on the user's authentication and admin status.
+        Only authenticated users can access the tickets.
+        Admin users can access all tickets, while regular users can only access their own tickets.
+        """
         if not request.user.is_authenticated:
             raise AuthenticationFailed()
 
@@ -34,6 +39,9 @@ class TicketListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        """
+        Create a new ticket.
+        """
         serializer = TicketSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(user=request.user)
@@ -45,6 +53,10 @@ class TicketDetailView(APIView):
     permission_classes = [IsOwnerOrReadOnly, IsAuthenticated]
 
     def get_ticket(self, pk):
+        """
+        Retrieve a ticket instance based on the provided ID (pk).
+        The ticket can only be retrieved if the user is the owner or a superuser.
+        """
         try:
             ticket = Ticket.objects.get(id=pk)
             if self.request.user.is_superuser or ticket.user == self.request.user:
@@ -55,6 +67,9 @@ class TicketDetailView(APIView):
             return None
 
     def get(self, request, pk):
+        """
+        Retrieve a ticket based on the provided ID (pk).
+        """
         ticket = self.get_ticket(pk)
         if ticket:
             serializer = TicketSerializer(ticket)

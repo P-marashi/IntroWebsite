@@ -36,6 +36,9 @@ def test_get_all_tickets():
     elif response.status_code == 404:
         assert response.data['status'] == "error"
         assert response.data["message"] == "No Tickets found"
+    elif response.status_code == 401:
+        assert response.data['status'] == "error"
+        assert response.data["message"] == "Authentication credentials were not provided."
 
 
 @pytest.mark.django_db
@@ -68,7 +71,7 @@ def test_put_blog():
         "description": "this is for test"
     }
 
-    response = client.put('/api/v1/support/tickets/1/', payload, format='json')
+    response = client.patch('/api/v1/support/tickets/2/', payload, format='json')
 
     if response.status_code == 201:
         assert response.data['title'] == payload['title']
@@ -85,7 +88,7 @@ def test_delete_blog():
     # Set authentication credentials
     client.credentials(HTTP_AUTHORIZATION='Bearer your_access_token')
 
-    response = client.delete('/api/v1/support/tickets/1/', format='json')
+    response = client.delete('/api/v1/support/tickets/2/', format='json')
 
     if response.status_code == 200:
         assert response.data['success'] == "success"

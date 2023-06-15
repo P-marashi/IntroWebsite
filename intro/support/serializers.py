@@ -5,7 +5,7 @@ from . import models
 from intro.users.serializers import UserSerializer
 
 
-class UserInfoSerailzer(serializers.ModelSerializer):
+class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = [
@@ -15,7 +15,7 @@ class UserInfoSerailzer(serializers.ModelSerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
-    user = UserInfoSerailzer()
+    user = UserInfoSerializer()  # Serializer for user information
 
     class Meta:
         model = models.Ticket
