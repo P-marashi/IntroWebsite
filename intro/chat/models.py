@@ -30,4 +30,4 @@ class Chat(ExportModelOperationsMixin('Chat'), BaseModel):
         verbose_name_plural = _("Chats")
 
     def __str__(self):
-        return "".join(self.text[50])
+        return "".join(self.text)
