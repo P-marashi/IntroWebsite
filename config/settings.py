@@ -66,6 +66,8 @@ DJANGO_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    # Daphne [ThirdParty] must be before staticfiles
+    'daphne',
     'django.contrib.staticfiles',
 ]
 
@@ -189,6 +191,16 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
+}
+
+# Channels Configurations
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)]
+        }
+    }
 }
 
 # Celery Configurations
