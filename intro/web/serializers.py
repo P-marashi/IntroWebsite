@@ -15,3 +15,8 @@ class StatsSerializer(serializers.Serializer):
     project = ProjectSerializer(many=True, required=False)
     ticket = TicketSerializer(many=True, required=False)
     user = UserSerializer(many=True, required=False)
+
+    def to_representation(self, instance):
+        if instance.get('user'):
+            instance['user'] = self.context['request'].user
+        return super().to_representation(instance)

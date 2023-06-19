@@ -29,7 +29,7 @@ class IndexAPIView(APIView):
     renderer_classes = [UserRenderer]
     permission_classes = (AllowAny,)
 
-    @method_decorator(cache_page(60*60*3))
+    # @method_decorator(cache_page(60*60*3))
     @extend_schema(request=EmptySerializer, responses={200: StatsSerializer})
     def get(self, request):
         """ Accept get request for retrieving
@@ -40,14 +40,13 @@ class IndexAPIView(APIView):
         last_tickets = Ticket.objects.order_by('-id')[:5]
         last_posts = BlogPost.objects.order_by('-id')[:5]
         last_projects = Projects.objects.order_by('-id')[:5]
-        stats = {
-            'blog': None,
-            'tickets': last_tickets,
-            'posts': last_posts,
-            'projects': last_projects,
-        }
-        serializer = StatsSerializer(stats, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        stats = StatsSerializer({
+            'blog': last_posts,
+            'chat': None,
+            'project': last_projects,
+            'ticket': last_tickets,
+        })
+        return Response(data=stats.data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=["web End-point"])
@@ -56,40 +55,24 @@ class DashboardAPIView(APIView):
     renderer_classes = [UserRenderer]
     permission_classes = (IsAuthenticated,)
 
-    def get_serializer(self):
-        if self.request.is_superuser:
-            tickets = Ticket.objects.order_by('-id')
-            posts = BlogPost.objects.order_by('-id')
-            chats = Chat.objects.order_by('-id')
-            projects = Projects.objects.order_by('-id')
-            users = get_user_model().objects.order_by('-id')
-            stats = {
-                'tickets': tickets,
-                'posts': posts,
-                'chats': chats,
-                'projects': projects,
-                'users': users
-            }
-        else:
-            tickets = Ticket.objects.filter(user=self.request.user)
-            posts = BlogPost.objects.filter(user=self.request.user)
-            chats = Chat.objects.filter(
-                Q(sender=self.request.user) |
-                Q(anonymous_sender=self.request['anonymous_user_id']))
-            projects = Projects.objects.filter(user=self.request.user)
-            user = self.request.user
-            stats = {
-                'tickets': tickets,
-                'posts': posts,
-                'chats': chats,
-                'projects': projects,
-                'users': user
-            }
-        return StatsSerializer(stats)
+    def get_stats(self, blog: object = None, chat: object = None,
+                  project: object = None, ticket: object = None, user: object = None):
+        stats = StatsSerializer({
+            'blog': blog,
+            'chat': chat,
+            'project': project,
+            'ticket': ticket,
+            'user': user
+        }, context={'request': self.request})
+        return stats
 
-    @method_decorator(cache_page(60*60*3))
-    @method_decorator(vary_on_headers("Authorization",))
+    # @method_decorator(cache_page(60*60*3))
+    # @method_decorator(vary_on_headers("Authorization",))
     @extend_schema(request=EmptySerializer, responses={200: StatsSerializer})
     def get(self, request):
-        serializer = self.get_serializer()
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        blog = BlogPost.objects.all()
+        chat = Chat.objects.all()
+        project = Projects.objects.all()
+        ticket = Ticket.objects.all()
+        stats = self.get_stats(blog, chat, project, ticket, user=None)
+        return Response(stats.data, status=status.HTTP_200_OK)

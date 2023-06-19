@@ -20,13 +20,12 @@ class Transaction(ExportModelOperationsMixin('Transaction'), BaseModel):
     description = models.TextField(_("description"), max_length=500, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("user"),
                              on_delete=models.CASCADE, related_name="transactions")
-    authority = models.TextField(_("authority"), max_length=500, null=True, blank=True)
+    authority = models.TextField(_("authority"), db_index=1,
+                                 max_length=500, null=True, blank=True)
     refID = models.TextField(_("refrence id"), max_length=500, null=True, blank=True)
-    status = models.CharField(_("status"), max_length=2, choices=TRANSACTION_STATUS, default="N")
+    status = models.CharField(_("status"), max_length=2,
+                              choices=TRANSACTION_STATUS, default="N")
 
     class Meta:
         verbose_name = _("Transaction")
         verbose_name_plural = _("Transactions")
-
-    def __str__(self):
-        return self.title

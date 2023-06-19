@@ -216,10 +216,10 @@ ZARINPAL = {
         'CALLBACK_URL': 'http://127.0.0.1:8000/api/v1/payment/callback/',  # callback url
     },
     'sandbox': {
-        'ZARINPAL_REQUEST_URL': '',
-        'ZARINPAL_AUTHORITY_URL': '',
-        'ZARINPAL_VERIFY_URL': '',
-        'MERCHANT_ID': '',  # 16 length hex merchant should place here
+        'ZARINPAL_REQUEST_URL': 'https://sandbox.zarinpal.com/pg/services/WebGate/wsdl/',
+        'ZARINPAL_AUTHORITY_URL': 'https://sandbox.zarinpal.com/pg/StartPay/',
+        'ZARINPAL_VERIFY_URL': 'https://sandbox.zarinpal.com/pg/services/WebGate/wsdl/',
+        'MERCHANT_ID': '1344b5d4-0048-11e8-94db-005056a205be',  # 16 length hex merchant should place here
         'CALLBACK_URL': 'http://127.0.0.1:8000/api/v1/payment/callback/',  # callback url
     }
 }

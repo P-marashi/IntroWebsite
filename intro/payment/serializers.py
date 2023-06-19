@@ -19,7 +19,7 @@ class TransationVerifyDataRequest(serializers.Serializer):
     authority = serializers.CharField()
 
 
-class TransactionSerializer(serializers.Serializer):
+class TransactionSerializer(serializers.ModelSerializer):
     """ A Serializer for Transaction model objects """
 
     class Meta:
