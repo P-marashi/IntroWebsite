@@ -167,3 +167,5 @@ intro/projects/migrations/
 intro/web/migrations/
 intro/chat/migrations/
 intro/core/migrations/
+.gitignore
+*.db

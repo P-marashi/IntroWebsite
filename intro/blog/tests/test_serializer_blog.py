@@ -1,6 +1,6 @@
 import pytest
-from myapp.serializers import BlogPostSerializer, CategorySerializer
-from myapp.models import BlogPost, Category
+from .serializers import BlogPostSerializer, CategorySerializer
+
 
 
 @pytest.fixture
