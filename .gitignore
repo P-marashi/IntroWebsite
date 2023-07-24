@@ -120,7 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+
 .venv
 env/
 venv/
@@ -167,5 +167,7 @@ intro/projects/migrations/
 intro/web/migrations/
 intro/chat/migrations/
 intro/core/migrations/
+intro/payment/migrations/
 .gitignore
 *.db
+sqlite3
